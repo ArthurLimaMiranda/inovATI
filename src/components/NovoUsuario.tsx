@@ -1,53 +1,64 @@
-//Modal para criação de usuários
+import { useAppContext } from "@/app/contexts/InfoContext";
 import { createUser } from "@/lib/api";
 import { isAxiosError } from "axios";
 import React, { useState } from "react";
 import { LuUserPlus2 } from "react-icons/lu";
+import {User} from "../../typings";
 
 interface NumberProps {
   setNewUser: Function;
   newUser: boolean;
 }
-export function NovoUsuario(props: NumberProps) { //Criação de Usuário pelo Admin
+export function NovoUsuario() { //Criação de Usuário pelo Admin
   const [showModal, setShowModal] = React.useState(false);
   const [nome, setNome] = useState("");
   const [login, setLogin] = useState("");
+  const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
-  const [rule, setRule] = useState("USER");
+  const [rule, setRule] = useState("");
+
+  const {
+        usuarios,
+        setUser
+      } = useAppContext()
 
   async function handleNewUser() {
-    //Checa se o usuários ja existe e, caso não, cria um usuário novo
-    let idP = rule === "USER" ? 2 : 1;
-    try {
-      await createUser(nome, login, senha, idP);
-      props.setNewUser(!props.newUser);
-      setShowModal(false);
-    } catch (error) {
-      if (
-        isAxiosError(error) &&
-        error.response &&
-        error.response.data &&
-        error.response.data.message
-      ) {
-        if (
-          error.response.data.message ===
-          `Login '${login}' já cadastrado para outro usuário.`
-        ) {
-          alert("Este login já está em uso. Por favor, escolha outro login.");
-        } else {
-          alert(`Erro: ${error.response.data.message}`);
-        }
-      } else {
-        alert("Ocorreu um erro ao criar o usuário.");
-      }
+    const emailExists = usuarios.some((user) => user.email === email);
+    const newId = usuarios.length > 0 
+      ? usuarios.reduce((maxId, user) => Math.max(maxId, user.id), 0) + 1 
+      : 1;
+    if(!emailExists){
+      const newUser: User = {
+        id: newId,
+        login: login,
+        name: nome,
+        email: email,
+        senha: senha,
+        tipo: rule,
+        verified: true,
+        descricao: '',
+        documentacao: [],
+      };
+
+      setUser((prevUsuarios) => {
+        const updatedUsuarios = [...prevUsuarios, newUser];
+        localStorage.setItem("usuarios", JSON.stringify(updatedUsuarios));
+        return updatedUsuarios;
+      });
+      setShowModal(false)
+    }
+    else{
+      alert('email ja cadastrado!')
     }
   }
 
   function resetModal() {
     setShowModal(true);
     setNome("");
+    setEmail("");
     setLogin("");
-    setRule("USER");
+    setSenha('')
+    setRule("");
   }
 
   return (
@@ -64,7 +75,7 @@ export function NovoUsuario(props: NumberProps) { //Criação de Usuário pelo A
         <>
           <div className="flex items-center justify-center min-h-screen overflow-x-hidden overflow-y-auto fixed inset-0 z-50">
             <div
-              className={`text-center bg-gray-1000 shadow-lg shadow-gray-500 rounded-2xl w-[35rem] h-[26rem] pt-12`}
+              className={`text-center bg-gray-1000 shadow-lg shadow-gray-500 rounded-2xl w-[35rem] h-[32rem] pt-12`}
             >
               <div className="text-black font-bold text-2xl text-center mb-8">
                 Novo usuário
@@ -79,6 +90,19 @@ export function NovoUsuario(props: NumberProps) { //Criação de Usuário pelo A
                   id="New usuario"
                   className="flex flex-1 flex-col gap-2"
                 >
+                  <input
+                    className="focus:border-green-1100 border-transparent focus:ring-0 bg-white border-white placeholder:text-gray-200 text-gray-800 appearance-none rounded-sm w-full py-2 px-4 leading-tight"
+                    id="userEmail"
+                    type={"text"}
+                    placeholder="Email"
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                    }}
+                    required
+                    title="Nome"
+                  />
+
                   <input
                     className="focus:border-green-1100 border-transparent focus:ring-0 bg-white border-white placeholder:text-gray-200 text-gray-800 appearance-none rounded-sm w-full py-2 px-4 leading-tight"
                     id="userName"
@@ -127,8 +151,13 @@ export function NovoUsuario(props: NumberProps) { //Criação de Usuário pelo A
                     required
                     title="Regra"
                   >
-                    <option value={2}>ADMIN</option>
-                    <option value={1}>USER</option>
+                    <option value="userBasico">Básico</option>
+                    <option value="admGeral">Administrador Geral</option>
+                    <option value="admATI">Administrador Geral</option>
+                    <option value="admINOVA">Administrador Geral</option>
+                    <option value="professor">Professor</option>
+                    <option value="aluno">Aluno</option>
+                    <option value="empresario">Empresário</option>
                   </select>
 
                   <button

@@ -52,7 +52,7 @@ export function DashboardUsuarios() {
           Usuários Cadastrados
         </p>
         <div className="flex justify-center">
-          <NovoUsuario setNewUser={setNewUser} newUser={newUser} />
+          <NovoUsuario/>
         </div>
       </div>
 

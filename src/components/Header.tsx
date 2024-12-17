@@ -156,7 +156,7 @@ export function HeaderIn(props: HeaderInProps) { //Header logado
                 <p
                   className={`${props.curPage == "editais" && "underline underline-offset-4 font-semibold"} hover:opacity-50`}
                 >
-                  Favoritos
+                  Submissões
                 </p>
               </button>
             </li>
