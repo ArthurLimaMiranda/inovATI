@@ -21,27 +21,18 @@ interface HeaderInProps {
 }
 
 export function HeaderOut(props: HeaderOutProps) { //header não logado
-  const [logged, setLogged] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const {
+    setLogado,
+    logado
+  } = useAppContext()
 
   const handleLogout = async () => {
     await fetch("/api/auth/logout");
-    destroyCookie(null, "engsoft.token");
-    destroyCookie(null, "_vercel_jwt");
-    setLogged(false);
-    window.location.reload();
+    destroyCookie(null, "inovATI.token");
+    setLogado({id:null,isLogado:false})
   };
-
-  useEffect(() => {
-    const { "engsoft.token": token } = parseCookies();
-    if (token) {
-      setLogged(true);
-    }
-    const { '_vercel_jwt': token2 } = parseCookies()
-    if(token2){
-      setLogged(true);
-    }
-  }, []);
 
   return (
     <div
@@ -82,7 +73,7 @@ export function HeaderOut(props: HeaderOutProps) { //header não logado
                 <p className="py-3 lg:py-0 text-center lg:text-left">Sobre</p>
               </Link>
             </li>
-            {logged&&<li>
+            {logado.isLogado&&<li>
                 <Link
                 href="/api/auth/logout"
                 onClick={handleLogout}
@@ -95,7 +86,7 @@ export function HeaderOut(props: HeaderOutProps) { //header não logado
               }
           </ul>
           <div className="flex items-center gap-x-5">
-            {!logged ? (
+            {!logado.isLogado ? (
               <Link href="/login">
                 <button className="font-normal border border-white rounded-xl flex flex-row items-center gap-x-2 py-1 px-3 hover:opacity-60 hover:bg-gray-100">
                   <IoEnterOutline /> Login
@@ -106,9 +97,6 @@ export function HeaderOut(props: HeaderOutProps) { //header não logado
                 <Link
                   className="font-normal border border-white rounded-xl flex flex-row items-center gap-x-2 py-1 px-3 hover:opacity-60 hover:bg-gray-100"
                   href="/dashboard"
-                  onClick={() => {
-                    setLogged(false);
-                  }}
                 >
                   <AiOutlineDashboard /> Dashboard
                 </Link>
@@ -133,7 +121,7 @@ export function HeaderIn(props: HeaderInProps) { //Header logado
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   
   const {
-    setLogado
+    setLogado,
   } = useAppContext()
 
   const toggleMenu = () => {

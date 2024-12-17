@@ -50,12 +50,6 @@ export interface Ranking {
   value: number;
 }
 
-export type Documentacao = {
-  url: number,
-  titulo: string,
-  descricao: string
-};
-
 export type Empresa = {
   url: number,
   titulo: string,
@@ -70,8 +64,10 @@ export type User = {
   verified: boolean,
   tipo: string,
   senha:string,
-  documentacao: Documentacao[]|null
+  descricao: string
+  documentacao: string[]
 };
+
 
 export type Logado = {
   isLogado: boolean

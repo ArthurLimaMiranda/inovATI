@@ -16,43 +16,13 @@ type User = {
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
-}
-
-interface Card {
-  id: number;
-  nome: string;
-  categoria: string;
-  publicoAlvo: string;
-  area: string;
-  dataPublicacao: string;
-  dataInicial: string;
-  dataFinal: string;
-  resultado: string;
-  idOrgaoFomento: number;
-  idUsuario: number;
-  criadoPorBot: boolean;
-  link: string;
+  files: File[];
+  setFiles: React.Dispatch<React.SetStateAction<File[]>>;
+  descricao: string;
+  setDescricao: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export function NovaDocumentacao(props: ModalProps) {
-  const [file, setFile] = useState<File | undefined>();
-  const [editaisData, setEditaisData] = useState({
-    nome: "",
-    categoria: "",
-    publicoAlvo: "",
-    area: "",
-    datapublicacao: "",
-    datainicial: "",
-    datafinal: "",
-    resultado: "",
-    idOrgaoFomento: 1,
-    criadoPorBot: false,
-    idUsuario: 2,
-    horaPublicacao: "",
-    horaInicial: "",
-    horaFinal: "",
-    link: "#",
-  });
 
   useEffect(() => {
     //Bloqueia o scroll pela página quando o modal está aberto
@@ -65,69 +35,33 @@ export function NovaDocumentacao(props: ModalProps) {
       document.body.classList.remove("overflow-hidden");
     };
   }, [props.isOpen]);
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    //Atualiza as informações do edital com o preenchimento dos inputs
-    const { name, value } = e.target;
-    setEditaisData({
-      ...editaisData,
-      [name]: value,
-    });
+  
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFiles = Array.from(e.target.files || []);
+    props.setFiles((prev) => [...prev, ...selectedFiles]);
   };
 
-  const formatDateTime = (date: string, time: string) => {
-    //Converte as infos de data e horários dos inputs para se adequar ao backend
-    const [year, month, day] = date.split("-");
-    const [hour, minute] = time.split(":");
-    return `${day}/${month}/${year} ${hour}:${minute}:00`;
+  const removeFile = (fileToRemove: File) => {
+    props.setFiles((prev) => prev.filter((file) => file !== fileToRemove));
   };
 
-  async function subirPdf(e: React.FormEvent<HTMLInputElement>) {
-    //Lida com o upload de pdf's de editais
-    const target = e.target as HTMLInputElement & {
-      files: FileList;
-    };
-    setFile(target.files[0]);
-  }
-
-  const cadastrarEdital = async () => {
-    if (file) {
-      const formData = new FormData();
-      formData.append("edital_pdf", file);
-  
-      try {
-        const response = await fetch("../app/api/upload", {
-          method: "POST",
-          body: formData,
-        });
-  
-        if (response.ok) {
-          const data = await response.json();
-          console.log("Arquivo salvo com sucesso:", data.fileName);
-          setFile(undefined);
-          props.onClose();
-        } else {
-          alert("Erro ao subir o arquivo.");
-        }
-      } catch (error) {
-        console.error("Erro no upload:", error);
-      }
-    } else {
-      alert("Insira algum arquivo para criar o edital.");
+  const submitEdital = () => {
+    if (props.files.length > 0) {
+      console.log("Arquivos prontos para envio:", props.files);
     }
+    props.onClose()
+
   };
   
-
   if (!props.isOpen) return null;
 
-  return props.isOpen ? (
+  return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div className="bg-transparent p-6 rounded-lg shadow-lg w-full max-w-4xl mx-4 max-h-screen overflow-y-auto">
         <div className="bg-[#F0F0F0] h-auto w-full rounded-lg shadow-lg p-6">
           <div className="mb-4">
             <button
               onClick={() => {
-                setFile(undefined);
                 props.onClose();
               }}
               className="flex items-center gap-1 hover:underline hover:text-[#088395] text-lg"
@@ -137,82 +71,72 @@ export function NovaDocumentacao(props: ModalProps) {
           </div>
           <div className="flex justify-center mb-10">
             <h2 className="font-semibold text-3xl text-[#088395]">
-              Cadastrar Novo Edital
+              Cadastrar Documentos
             </h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="flex flex-col">
-              <label
-                className="block text-[#3C3C3C] text-md font-bold mb-2"
-                htmlFor="titulo"
-              >
-                Título
-              </label>
-              <input
-                className="shadow bg-white border-[#BEBEBE] appearance-none border rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="titulo"
-                type="text"
-                onChange={handleInputChange}
-                name="nome"
-              />
-            </div>
-            <div className="flex flex-col">
-              <label
-                className="block text-[#3C3C3C] text-md font-bold mb-2"
-                htmlFor="categoria"
-              >
-                Categoria
-              </label>
-              <input
-                className="shadow bg-white border-[#BEBEBE] appearance-none border rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="categoria"
-                type="text"
-                onChange={handleInputChange}
-                name="categoria"
-              />
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
+          <div className="flex flex-col">
+            <label
+              className="block text-[#3C3C3C] text-md font-bold mb-2"
+              htmlFor="Descricao"
+            >
+              Descricao
+            </label>
+            <textarea
+              className="shadow bg-white border-[#BEBEBE] appearance-none border rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline h-28 resize-none"
+              id="Descricao"
+              value={props.descricao}
+              onChange={(e) => {props.setDescricao(e.target.value)}}
+              name="nome"
+            ></textarea>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
             <div className="flex flex-col">
-              <label
-                className="block text-[#3C3C3C] text-md font-bold mb-2"
-                htmlFor="publicoalvo"
-              >
-                Descrição
-              </label>
-              <input
-                className="shadow bg-white border-[#BEBEBE] appearance-none border rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="publicoalvo"
-                type="text"
-                onChange={handleInputChange}
-                name="publicoAlvo"
-              />
-            </div>        
+              {props.files.length > 0 && (
+                <>
+                <label
+                  className="block text-[#3C3C3C] text-md font-bold mb-2"
+                  htmlFor="categoria"
+                >
+                  Categoria
+                </label>
+                <div className="overflow-y-scroll  h-28 rounded-xl p-2 border-2">
+                  <ul>
+                    {props.files.map((file, index) => (
+                      <li key={index}>
+                        <span className="text-sm">{file.name}{" "}</span>
+                        <button onClick={() => removeFile (file)} className="font-semibold text-red-500 hover:text-red-300">
+                          | Remover
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                </>
+              )}
+            </div>
           </div>
           <div className="flex justify-between mt-6">
             <div className="relative inline-block">
-              <input
-                type="file"
-                id="file-upload"
-                className="hidden"
-                onChange={subirPdf}
-              />
-              <label
-                htmlFor="file-upload"
-                className={`flex items-center px-3 py-2 rounded-md text-white font-semibold cursor-pointer ${
-                  !file ? "bg-green-700" : "bg-[#DC1D00]"
-                } hover:opacity-60 select-none whitespace-nowrap`}
-              >
-                {file ? (
-                  <span>Escolher outro arquivo</span>
-                ) : (
-                  <span>Subir PDF</span>
-                )}
-                <FaFileUpload className="ml-2" />
-              </label>
+            <input
+        type="file"
+        id="file-upload"
+        className="hidden"
+        onChange={handleFileUpload }
+        multiple
+      />
+      <label
+        htmlFor="file-upload"
+        className={`flex items-center px-3 py-2 rounded-md text-white font-semibold cursor-pointer ${
+          props.files.length > 0 ? "bg-[#DC1D00]" : "bg-green-700"
+        } hover:opacity-60 select-none whitespace-nowrap`}
+      >
+        {props.files.length > 0 ? <span>Escolher outro arquivo</span> : <span>Subir PDF</span>}
+        <FaFileUpload className="ml-2" />
+      </label>
             </div>
             <button
-              onClick={cadastrarEdital}
+              type="button"
+              onClick={submitEdital}
               className="flex items-center px-3 py-2 rounded-md text-white font-semibold cursor-pointer bg-[#088395] hover:opacity-60 select-none whitespace-nowrap"
             >
               Enviar
@@ -221,5 +145,5 @@ export function NovaDocumentacao(props: ModalProps) {
         </div>
       </div>
     </div>
-  ) : null;
+  );
 }

@@ -66,7 +66,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }){
               return;
             }
             if (token) {
-              setCookie(undefined, 'inovaATI.token', token, {
+              setCookie(undefined, 'inovATI.token', token, {
                 maxAge: 60 * 60 * 3,
                 path: '/',
                 secure: process.env.NODE_ENV === 'production',
@@ -87,7 +87,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }){
 
   return (
     <AuthContext.Provider value={{
-      user: user || { id: 0, login: "", documentacao:null, email:'', name:'', senha: '', tipo:'', verified:false},
+      user: user || { id: 0, login: "", descricao:'', documentacao:[], email:'', name:'', senha: '', tipo:'', verified:false},
       isAuthenticated,
       signIn
     }}>

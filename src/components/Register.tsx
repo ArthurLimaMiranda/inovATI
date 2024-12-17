@@ -1,5 +1,7 @@
 //Cadastro de novo usuário
 "use client";
+import {User} from "../../typings";
+
 import React, { useContext, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -9,38 +11,90 @@ import { AuthContext } from "../app/contexts/AuthContext";
 import { parseCookies } from "nookies";
 import { FaRegUserCircle } from "react-icons/fa";
 import { IoEnterOutline } from "react-icons/io5";
+import { MdDriveFileRenameOutline } from "react-icons/md";
+
 import { createUser } from "@/lib/api";
 
 import { MdCreateNewFolder } from "react-icons/md";
 import { NovaDocumentacao } from "./NovaDocumentacao";
+import { useAppContext } from "@/app/contexts/InfoContext";
 
 export function Register() {
+
+    const {
+      usuarios,
+      setUser,
+      logado
+    } = useAppContext()
+  
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [login, setLogin] = useState("");
   const [senha, setSenha] = useState("");
+
+  const [descricao, setDescricao] = useState("");
+  const [files, setFiles] = useState<File[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   
   const { signIn } = useContext(AuthContext);
   const [badRegister, setBadRegister] = useState(false);
   const router = useRouter();
 
-  async function handleLogin() {
+  function fileToBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string); // Retorna o Base64
+      reader.onerror = reject;
+      reader.readAsDataURL(file); // Lê o arquivo e converte para Base64
+    });
+  }
+
+  async function handleRegister() {
+    // Verificar se o email já existe
+    const emailExists = usuarios.some((user) => user.email === email);
+    if (emailExists) {
+      setBadRegister(true);
+      return;
+    }
+  
     try {
-      await createUser( nome,login, senha, 1 ).then(()=>{signIn({login, senha})});
+      // Converter arquivos para Base64
+      const base64Files = await Promise.all(files.map(fileToBase64));
+  
+      const newId = usuarios.length > 0 
+        ? usuarios.reduce((maxId, user) => Math.max(maxId, user.id), 0) + 1 
+        : 1;
+  
+      const newUser: User = {
+        id: newId,
+        login: login,
+        name: nome,
+        email: email,
+        senha: senha,
+        tipo: "", // Defina o tipo de usuário, se necessário
+        verified: false,
+        descricao: descricao,
+        documentacao: base64Files, // Armazena os arquivos em Base64
+      };
+  
+      // Atualizar usuários no estado e salvar no localStorage
+      setUser((prevUsuarios) => {
+        const updatedUsuarios = [...prevUsuarios, newUser];
+        localStorage.setItem("usuarios", JSON.stringify(updatedUsuarios));
+        return updatedUsuarios;
+      });
+  
+      router.push("/");
     } catch (error) {
+      console.error("Erro ao registrar usuário:", error);
       setBadRegister(true);
     }
   }
+  
+  
 
   useEffect(() => {
-    //Checa se o usuário já está logado e o manda para a dashboard de editais favoritados e crud de usuários (se o user for adm)
-    const { "engsoft.token": token } = parseCookies();
-    if (token) {
-      router.push("/dashboard");
-    }
-    const { '_vercel_jwt': token2 } = parseCookies()
-    if(token2){
+    if (logado.isLogado) {
       router.push("/dashboard");
     }
     setBadRegister(false);
@@ -62,7 +116,7 @@ export function Register() {
             className="w-full md:w-3/5 p-6 md:p-10"
             onSubmit={(e) => {
               e.preventDefault();
-              handleLogin();
+              handleRegister();
             }}
           >
             <div className="flex justify-between">
@@ -105,15 +159,15 @@ export function Register() {
                     placeholder="Usuário"
                     required
                   />
-                  <AiOutlineMail className="absolute top-1/2 left-3 transform -translate-y-1/2 text-[#1C1C1C]" />
+                  <MdDriveFileRenameOutline className="absolute top-1/2 left-3 transform -translate-y-1/2 text-[#1C1C1C]" />
                 </div>
                 <div className="relative my-4 w-4/5 hover:opacity-70 hover:border-gray-400">
                   <input
-                    type="username"
+                    type="email"
                     value={email}
                     onChange={(e) => {setEmail(e.target.value); setBadRegister(false)}}
                     className="border border-[#1C1C1C] rounded-md pl-10 pr-3 py-2 w-full block text-sm text-[#1C1C1C] bg-transparent border-1 appearance-none focus:outline-none focus:ring-0 focus:border-[#088395]"
-                    placeholder="Usuário"
+                    placeholder="Email"
                     required
                   />
                   <AiOutlineMail className="absolute top-1/2 left-3 transform -translate-y-1/2 text-[#1C1C1C]" />
@@ -131,6 +185,7 @@ export function Register() {
                 </div>
                 <>
                   <button
+                    type="button"
                     onClick={handleOpenModal}
                     className="bg-[#37B7C3] text-white flex items-center justify-around py-2 h-14 w-14 rounded-full hover:opacity-60"
                   >
@@ -138,6 +193,10 @@ export function Register() {
                     <MdCreateNewFolder size={30} />
                   </button>
                   <NovaDocumentacao
+                    descricao={descricao}
+                    setDescricao={setDescricao}
+                    files={files}
+                    setFiles={setFiles}
                     isOpen={isModalOpen}
                     onClose={handleCloseModal}
                   />

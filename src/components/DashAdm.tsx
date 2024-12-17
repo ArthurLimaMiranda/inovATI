@@ -6,17 +6,25 @@ import { COLORS } from '../../src/lib/AppStyles'
 import { AuthContext } from "@/app/contexts/AuthContext";
 import { DashboardUsuarios } from "./DashboardUsuarios";
 import { DashFavoritos } from "./DashFavoritos";
+import { useAppContext } from "@/app/contexts/InfoContext";
+import { data } from "autoprefixer";
+import { userInfo } from "os";
 
 export function DashAdm(){
 
-  const userInfo = useContext(AuthContext).user
+  const {
+      logado,
+      usuarios
+    } = useAppContext()
+
+  const foundUser = usuarios.find((u) => u.id === logado.id);
 
   const [currentPage, setCurrentPage] = useState("editais");
 
   return(
 
     <>
-      <HeaderIn adm={userInfo.idPerfil==2} setPage={setCurrentPage} curPage={currentPage}/>
+      <HeaderIn adm={(foundUser?.tipo=='admGeral')||(foundUser?.tipo=='admATI')} setPage={setCurrentPage} curPage={currentPage}/>
       {(currentPage == "editais")&&(<DashFavoritos/>)}
       {(currentPage == "users")&&(
         <div className={`bg-[${COLORS.bgDark}] h-[100vh] py-24`}>
@@ -24,7 +32,7 @@ export function DashAdm(){
             <div 
               className={`rounded-xl ${currentPage == "users"?('w-[80%] justify-center'):('w-[25%]')} flex flex-col items-center`}
               style={{boxShadow: '5px 5px 5px rgba(0, 0, 0, 0.4), -5px -5px 5px rgba(255, 255, 255, 0.5)',transition: 'opacity 0.3s ease-in-out',}}>
-                <DashboardUsuarios loggedUser={userInfo.login}/>
+                <DashboardUsuarios/>
             </div>
           </div>
         </div>
