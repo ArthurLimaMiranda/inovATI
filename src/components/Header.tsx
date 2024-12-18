@@ -64,7 +64,7 @@ export function HeaderOut(props: HeaderOutProps) { //header não logado
               </Link>
             </li>
             <li className="w-full lg:w-auto">
-              <Link href="/search">
+              <Link href="/noticias">
                 <p className="py-3 lg:py-0 text-center lg:text-left">Noticias</p>
               </Link>
             </li>
