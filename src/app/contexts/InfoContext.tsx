@@ -34,7 +34,6 @@ export function InfoWrapper({ children }: { children: React.ReactNode }) {
   const [problemas, setProlema] = useState<Prolema[]>([]);
   const [editais, setEdital] = useState<Edital[]>([]);
   const [rankings, setRanking] = useState<Ranking[]>([]);
-  const [empresas, setEmpresa] = useState<Empresa[]>([]);
   const [equipes, setEquipe] = useState<Equipe[]>([]);
   const [usuarios, setUser] = useState<User[]>(() => {
     const savedUsers = localStorage.getItem("usuarios");
@@ -60,14 +59,24 @@ export function InfoWrapper({ children }: { children: React.ReactNode }) {
   const [revalidate, setRevalidate] = useState("");
   const [currentPage, setCurrentPage] = useState<string[]>([""]);
 
+  const [empresas, setEmpresa] = useState<Empresa[]>(() => {
+    const savedEmpresas = localStorage.getItem("empresas");
+    return savedEmpresas ? JSON.parse(savedEmpresas) : [];
+  });
+  
   // Sincronizar mudanças no estado com o Local Storage
+  useEffect(() => {
+    localStorage.setItem("empresas", JSON.stringify(empresas));
+  }, [empresas]);
+  
   useEffect(() => {
     localStorage.setItem("usuarios", JSON.stringify(usuarios));
   }, [usuarios]);
-
+  
   useEffect(() => {
     localStorage.setItem("logado", JSON.stringify(logado));
   }, [logado]);
+  
 
   return (
     <infoContext.Provider
