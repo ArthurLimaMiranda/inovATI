@@ -6,7 +6,7 @@ export interface Solucao {
   titulo: string;
   descricao: string;
   equipeID: number | null; // Altere para permitir null
-  area: string;
+  pitchLink: string;
   inova: boolean;
   status: boolean;
   aprovado:boolean
@@ -60,4 +60,6 @@ export type Logado = {
 };
 
 export interface Equipe {
+  id:number,
+  nome:string
 }

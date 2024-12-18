@@ -31,7 +31,27 @@ const infoContext = createContext<Info | undefined>(undefined);
 export function InfoWrapper({ children }: { children: React.ReactNode }) {
   const [revalidate, setRevalidate] = useState("");
   const [currentPage, setCurrentPage] = useState<string[]>([""]);
-  const [solucoes, setSolucao] = useState<Solucao[]>([]);
+
+  const mockSolucao: Solucao = {
+    id: 1,
+    titulo: "Redução de Emissões de CO2",
+    descricao: "Uma proposta de solução para reduzir as emissões de CO2 por meio do uso de energia renovável nas indústrias.",
+    equipeID: 1,
+    pitchLink: "https://example.com/pitch",
+    inova: true,
+    status: true,
+    aprovado: false,
+  };
+
+  const [solucoes, setSolucao] = useState<Solucao[]>(() => {
+    const savedSolucoes = localStorage.getItem("solucoes");
+    const solucoesIniciais = savedSolucoes ? JSON.parse(savedSolucoes) : [];
+    if (!solucoesIniciais.find((solucao: Solucao) => solucao.id === mockSolucao.id)) {
+      solucoesIniciais.push(mockSolucao);
+    }
+    return solucoesIniciais;
+  });
+
   const [noticias, setNoticias] = useState<Noticias[]>([]);
   const [editais, setEdital] = useState<Edital[]>([]);
   const [rankings, setRanking] = useState<Ranking[]>([]);
@@ -86,6 +106,11 @@ export function InfoWrapper({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     localStorage.setItem("problemas", JSON.stringify(problemas));
   }, [problemas]);
+
+  useEffect(() => {
+    localStorage.setItem("solucoes", JSON.stringify(solucoes));
+  }, [solucoes]);
+  
   
 
   return (
