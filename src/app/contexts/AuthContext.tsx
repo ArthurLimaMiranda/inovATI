@@ -56,7 +56,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }){
       if (foundUser && foundUser.verified && foundUser.senha === data.senha) {
         setLogado({ isLogado: true, id: foundUser.id });
         jwt.sign(
-          { id: foundUser.id, login: foundUser.login, nome: foundUser.name, tipo: foundUser.tipo },
+          { id: foundUser.id, login: foundUser.login, nome: foundUser.nome, tipo: foundUser.tipo },
           secret,
           { expiresIn: '3h', algorithm: 'HS256' },
           (err: any, token: any) => {
@@ -87,7 +87,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }){
 
   return (
     <AuthContext.Provider value={{
-      user: user || { id: 0, login: "", descricao:'', documentacao:[], email:'', name:'', senha: '', tipo:'', verified:false},
+      user: user || { id: 0, login: "", descricao:'', documentacao:[], email:'', nome:'', empresaVinculo:'', senha: '', tipo:'', verified:false},
       isAuthenticated,
       signIn
     }}>

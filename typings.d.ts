@@ -51,21 +51,24 @@ export interface Ranking {
 }
 
 export type Empresa = {
-  url: number,
-  titulo: string,
-  descricao: string
+  id: number
+  nome:string,
+  cnpj:string,
+  telefone:string,
+  email:string,
 };
 
 export type User = {
   id: number,
   login: string,
-  name: string,
+  nome: string,
   email: string,
   verified: boolean,
   tipo: string,
   senha:string,
   descricao: string
   documentacao: string[]
+  empresaVinculo:string
 };
 
 

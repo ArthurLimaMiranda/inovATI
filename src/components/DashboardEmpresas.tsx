@@ -1,68 +1,73 @@
 "use client";
 import { useAppContext } from "@/app/contexts/InfoContext";
 import { useState } from "react";
-import { NovoUsuario } from "./NovoUsuario";
+import { NovaEmpresa } from "./NovaEmpresa";
 
-export function DashboardUsuarios() {
-  const { usuarios, setUser, logado} = useAppContext();
-  const [newUser, setNewUser] = useState(false);
-  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+export function DashboardEmpresas() {
+  const { usuarios, empresas, setUser, setEmpresa, logado } = useAppContext();
+  const [selectedEmpresaId, setSelectedEmpresaId] = useState<string>(""); // ID da empresa selecionada no modal
+  const [selectedUserId, setSelectedUserId] = useState<number | null>(null); // ID do usuário selecionado no modal
   const [modalOpen, setModalOpen] = useState(false);
-  const [selectedType, setSelectedType] = useState<string>("");
 
-  const handleRemoveUser = (id: number) => {
-    if (confirm("Tem certeza que deseja remover este usuário?")) {
-      setUser((prevUsers) => {
-        const updatedUsers = prevUsers.filter((user) => user.id !== id);
-        localStorage.setItem("usuarios", JSON.stringify(updatedUsers));
-        return updatedUsers;
+  // Função para remover uma empresa
+  const handleRemoveEmpresa = (id: number, cnpj: string) => {
+    if (confirm("Tem certeza que deseja remover esta empresa?")) {
+      // Remover empresa da lista
+      setEmpresa((prevEmpresas) => {
+        const updatedEmpresas = prevEmpresas.filter((emp) => emp.id !== id);
+        localStorage.setItem("empresas", JSON.stringify(updatedEmpresas));
+        return updatedEmpresas;
+      });
+
+      // Atualizar os usuários para desvincular a empresa
+      setUser((prevUsuarios) => {
+        const updatedUsuarios = prevUsuarios.map((user) =>
+          user.empresaVinculo === cnpj ? { ...user, empresaVinculo: "" } : user
+        );
+        localStorage.setItem("usuarios", JSON.stringify(updatedUsuarios));
+        return updatedUsuarios;
       });
     }
   };
 
-  const handleToggleVerified = (id: number) => {
-    setSelectedUserId(id);
+  const handleVincularEmpresa = (userId: number) => {
+    setSelectedUserId(userId);
     setModalOpen(true);
   };
 
-  const handleConfirmVerification = () => {
-    if (selectedUserId !== null && selectedType) {
-      setUser((prevUsers) => {
-        const updatedUsers = prevUsers.map((user) =>
-          user.id === selectedUserId
-            ? { ...user, verified: true, tipo: selectedType }
-            : user
-        );
-        localStorage.setItem("usuarios", JSON.stringify(updatedUsers));
-        return updatedUsers;
-      });
-      setModalOpen(false);
-      setSelectedUserId(null);
-      setSelectedType("");
-    } else {
-      alert("Por favor, selecione um tipo de usuário.");
-    }
+  const handleConfirmVinculo = () => {
+    if (!selectedEmpresaId || !selectedUserId) return;
+
+    setUser((prevUsuarios) => {
+      const updatedUsuarios = prevUsuarios.map((user) =>
+        user.id === selectedUserId ? { ...user, empresaVinculo: selectedEmpresaId } : user
+      );
+      localStorage.setItem("usuarios", JSON.stringify(updatedUsuarios));
+      return updatedUsuarios;
+    });
+
+    setModalOpen(false);
+    setSelectedEmpresaId("");
+    setSelectedUserId(null);
   };
 
   return (
     <div className="px-4 sm:px-6 md:px-7 py-6 rounded-xl w-full h-full">
       <div className="w-full grid grid-cols-1 sm:grid-cols-3 items-center border-b mb-6 pb-5">
         <div />
-        <p className="text-lg sm:text-xl text-center font-semibold">
-          Usuários Cadastrados
-        </p>
+        <p className="text-lg sm:text-xl text-center font-semibold">Empresas</p>
         <div className="flex justify-center">
-          <NovoUsuario setNewUser={setNewUser} newUser={newUser} />
+          <NovaEmpresa />
         </div>
       </div>
 
       <div className="flex flex-col overflow-y-scroll h-[85%] gap-y-10">
-        {/* Usuários não validados */}
+        {/* Representantes */}
         <div className="border rounded-xl flex flex-col p-4 items-center">
-          <p className="text-lg font-bold py-5">Usuários não validados</p>
+          <p className="text-lg font-bold py-5">Representantes</p>
           <div className="grid grid-cols-4 gap-x-6 gap-y-6 overflow-auto max-h-[80vh]">
             {usuarios
-              .filter((us) => !us.verified)
+              .filter((us) => us.tipo === "empresa")
               .map((us) => (
                 <div
                   key={us.id}
@@ -71,102 +76,42 @@ export function DashboardUsuarios() {
                   <div>
                     <p className="font-semibold text-lg">{us.login}</p>
                     <p className="text-gray-600">{us.email}</p>
+                    <p className="text-sm text-gray-500">Empresa vinculada: {us.empresaVinculo || "Nenhuma"}</p>
                   </div>
-
-                  {us.documentacao && (
-                    <button
-                      onClick={() =>
-                        us.documentacao?.forEach((base64) => {
-                          if (!base64.startsWith("data:")) {
-                            console.error("Formato Base64 inválido!");
-                            return;
-                          }
-                          const link = document.createElement("a");
-                          link.href = base64;
-                          const mimeMatch = base64.match(/data:(.*?);base64,/);
-                          const mime = mimeMatch ? mimeMatch[1] : "application/octet-stream";
-                          link.download = `arquivo.${mime.split("/")[1] || "bin"}`; // Nomeia o arquivo de acordo com o tipo MIME
-                          link.click();
-                        })
-                        
-                      }
-                      className="mt-2 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded"
-                    >
-                      Baixar Documentação
-                    </button>
-                  )}
-                  
                   <button
-                    onClick={() => handleToggleVerified(us.id)}
+                    onClick={() => handleVincularEmpresa(us.id)}
                     className="mt-2 bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-4 rounded"
                   >
-                    Validar
-                  </button>
-                  <button
-                    onClick={() => handleRemoveUser(us.id)}
-                    className="mt-4 bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded"
-                  >
-                    Remover
+                    Vincular Empresa
                   </button>
                 </div>
               ))}
           </div>
         </div>
 
-        {/* Usuários validados */}
+        {/* Empresas */}
         <div className="border rounded-xl flex flex-col p-4 items-center">
-          <p className="text-lg font-bold py-5">Usuários validados</p>
+          <p className="text-lg font-bold py-5">Empresas Cadastradas</p>
           <div className="grid grid-cols-4 gap-x-6 gap-y-6 overflow-auto max-h-[80vh]">
-            {usuarios
-              .filter((us) => us.verified&&us.id!=logado.id)
-              .map((us) => (
-                <div
-                  key={us.id}
-                  className="p-4 border rounded-lg shadow-lg bg-white flex flex-col justify-between"
-                >
-                  <div>
-                    <p className="font-semibold text-lg">{us.login}</p>
-                    <p className="text-gray-600">{us.email}</p>
-                    <p className="text-sm text-gray-500">Tipo: {us.tipo}</p>
-                  </div>
-
-                  {us.documentacao && (
-                    <button
-                      onClick={() =>
-                        us.documentacao?.forEach((base64) => {
-                          if (!base64.startsWith("data:")) {
-                            console.error("Formato Base64 inválido!");
-                            return;
-                          }
-                          const link = document.createElement("a");
-                          link.href = base64;
-                          const mimeMatch = base64.match(/data:(.*?);base64,/);
-                          const mime = mimeMatch ? mimeMatch[1] : "application/octet-stream";
-                          link.download = `arquivo.${mime.split("/")[1] || "bin"}`; // Nomeia o arquivo de acordo com o tipo MIME
-                          link.click();
-                        })
-                        
-                      }
-                      className="mt-2 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded"
-                    >
-                      Baixar Documentação
-                    </button>
-                  )}
-
-                  <button
-                    onClick={() => handleToggleVerified(us.id)}
-                    className="mt-2 bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-4 rounded"
-                  >
-                    Alterar permissões
-                  </button>
-                  <button
-                    onClick={() => handleRemoveUser(us.id)}
-                    className="mt-4 bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded"
-                  >
-                    Remover
-                  </button>
+            {empresas.map((emp) => (
+              <div
+                key={emp.id}
+                className="p-4 border rounded-lg shadow-lg bg-white flex flex-col justify-between"
+              >
+                <div>
+                  <p className="font-semibold text-lg">{emp.nome}</p>
+                  <p className="text-gray-600">CNPJ: {emp.cnpj}</p>
+                  <p className="text-sm text-gray-500">Email: {emp.email}</p>
+                  <p className="text-sm text-gray-500">Telefone: {emp.telefone}</p>
                 </div>
-              ))}
+                <button
+                  onClick={() => handleRemoveEmpresa(emp.id, emp.cnpj)}
+                  className="mt-4 bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded"
+                >
+                  Remover
+                </button>
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -175,32 +120,30 @@ export function DashboardUsuarios() {
       {modalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-[90%] max-w-md">
-            <h2 className="text-lg font-bold mb-4">Selecione o tipo de usuário</h2>
+            <h2 className="text-lg font-bold mb-4">Selecione a empresa para vincular</h2>
             <div className="mb-4">
-              <label htmlFor="userType" className="block text-sm font-medium text-gray-700 mb-2">
-                Tipo de Usuário:
+              <label htmlFor="empresaVinc" className="block text-sm font-medium text-gray-700 mb-2">
+                Empresas:
               </label>
               <select
-                id="userType"
-                value={selectedType}
-                onChange={(e) => setSelectedType(e.target.value)}
+                id="empresaVinc"
+                value={selectedEmpresaId}
+                onChange={(e) => setSelectedEmpresaId(e.target.value)}
                 className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="" disabled>
                   Selecione...
                 </option>
-                <option value="userBasico">Básico</option>
-                <option value="admGeral">Administrador Geral</option>
-                <option value="admATI">Administrador Geral</option>
-                <option value="admINOVA">Administrador Geral</option>
-                <option value="professor">Professor</option>
-                <option value="aluno">Aluno</option>
-                <option value="empresario">Empresário</option>
+                {empresas.map((emp) => (
+                  <option key={emp.id} value={emp.cnpj}>
+                    {emp.nome} - {emp.cnpj}
+                  </option>
+                ))}
               </select>
             </div>
             <div className="flex justify-between">
               <button
-                onClick={handleConfirmVerification}
+                onClick={handleConfirmVinculo}
                 className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded"
               >
                 Confirmar

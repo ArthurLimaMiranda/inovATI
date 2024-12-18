@@ -130,7 +130,7 @@ export function HeaderIn(props: HeaderInProps) { //Header logado
 
   const handleLogout = async () => {
     await fetch("/api/auth/logout");
-    destroyCookie(null, "engsoft.token");
+    destroyCookie(null, "inovATI.token");
     setLogado({id:null,isLogado:false})
     window.location.reload(); // Reload the page to ensure the state is updated
   };
@@ -147,7 +147,7 @@ export function HeaderIn(props: HeaderInProps) { //Header logado
         <div className="flex items-center h-full justify-between">
           <Link href="/">
             <p className="flex flex-row items-center gap-x-2">
-              EditalView <FaRegEye />
+              InovATI <FaRegEye />
             </p>
           </Link>
           <ul className={`hidden lg:flex gap-x-6 items-center justify-center`}>
@@ -166,6 +166,15 @@ export function HeaderIn(props: HeaderInProps) { //Header logado
                   className={`${props.curPage == "users" && "underline underline-offset-4 font-semibold"} hover:opacity-50`}
                 >
                   Usuários
+                </p>
+              </button>
+            </li>
+            <li>
+              <button onClick={() => props.setPage("empresas")}>
+                <p
+                  className={`${props.curPage == "empresas" && "underline underline-offset-4 font-semibold"} hover:opacity-50`}
+                >
+                  Empresas
                 </p>
               </button>
             </li>
