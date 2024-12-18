@@ -7,8 +7,6 @@ import React, { useEffect, useState } from "react";
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
-  filteredProblemas: Prolema[];
-  setProlema: React.Dispatch<React.SetStateAction<Prolema[]>>,
 }
 
 export function NovoProblema(props: ModalProps) {
@@ -86,10 +84,14 @@ export function NovoProblema(props: ModalProps) {
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div className="bg-transparent p-6 rounded-lg shadow-lg w-full max-w-4xl mx-4 max-h-screen overflow-y-auto">
         <div className="bg-[#F0F0F0] h-auto w-full rounded-lg shadow-lg p-6">
-          <div className="flex justify-center mb-10">
+          <div className="flex flex-row justify-between mb-10">
+            <button className="text-sm hover:underline" onClick={props.onClose}>
+              {"<- Voltar"}
+            </button>
             <h2 className="font-semibold text-3xl text-[#088395]">
               Submeter Novo Problema
             </h2>
+            <div></div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col">

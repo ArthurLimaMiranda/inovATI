@@ -5,7 +5,7 @@ import React from 'react';;
 import { COLORS } from '../../src/lib/AppStyles'
 import { AuthContext } from "@/app/contexts/AuthContext";
 import { DashboardUsuarios } from "./DashboardUsuarios";
-import { DashFavoritos } from "./DashFavoritos";
+import { DashProblemas } from "./DashFavoritos";
 import { useAppContext } from "@/app/contexts/InfoContext";
 import { data } from "autoprefixer";
 import { userInfo } from "os";
@@ -26,7 +26,7 @@ export function DashAdm(){
 
     <>
       <HeaderIn adm={(foundUser?.tipo=='admGeral')||(foundUser?.tipo=='admATI')} setPage={setCurrentPage} curPage={currentPage}/>
-      {(currentPage == "editais")&&(<DashFavoritos/>)}
+      {(currentPage == "editais")&&(<DashProblemas/>)}
       {(currentPage == "users")&&(
         <div className={`bg-[${COLORS.bgDark}] h-[100vh] py-24`}>
           <div className={`h-full flex flex-row ${currentPage == "users"?('w-full justify-center'):('mx-11 justify-between gap-x-10')}`}>

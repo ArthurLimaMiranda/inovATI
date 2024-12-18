@@ -158,10 +158,6 @@ export function Search() {
                         <NovoProblema
                           isOpen={isModalOpen}
                           onClose={handleCloseModal}
-                          cardData={cardData}
-                          filteredEditais={filteredCards}
-                          setCardData={setCardData}
-                          setFilteredEditais={setFilteredCards}
                         />
                       </>
                     )}
