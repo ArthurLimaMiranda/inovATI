@@ -29,12 +29,18 @@ type Info = {
 const infoContext = createContext<Info | undefined>(undefined);
 
 export function InfoWrapper({ children }: { children: React.ReactNode }) {
+  const [revalidate, setRevalidate] = useState("");
+  const [currentPage, setCurrentPage] = useState<string[]>([""]);
   const [solucoes, setSolucao] = useState<Solucao[]>([]);
   const [noticias, setNoticias] = useState<Noticias[]>([]);
-  const [problemas, setProlema] = useState<Prolema[]>([]);
   const [editais, setEdital] = useState<Edital[]>([]);
   const [rankings, setRanking] = useState<Ranking[]>([]);
   const [equipes, setEquipe] = useState<Equipe[]>([]);
+  const [problemas, setProlema] = useState<Prolema[]>(() => {
+    const savedProblemas = localStorage.getItem("problemas");
+    return savedProblemas ? JSON.parse(savedProblemas) : [];
+  }); 
+  
   const [usuarios, setUser] = useState<User[]>(() => {
     const savedUsers = localStorage.getItem("usuarios");
     return savedUsers ? JSON.parse(savedUsers) : [
@@ -52,12 +58,12 @@ export function InfoWrapper({ children }: { children: React.ReactNode }) {
       },
     ];
   });
+
+
   const [logado, setLogado] = useState<Logado>(() => {
     const savedLogado = localStorage.getItem("logado");
     return savedLogado ? JSON.parse(savedLogado) : { id: null, isLogado: false };
   });
-  const [revalidate, setRevalidate] = useState("");
-  const [currentPage, setCurrentPage] = useState<string[]>([""]);
 
   const [empresas, setEmpresa] = useState<Empresa[]>(() => {
     const savedEmpresas = localStorage.getItem("empresas");
@@ -76,6 +82,10 @@ export function InfoWrapper({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     localStorage.setItem("logado", JSON.stringify(logado));
   }, [logado]);
+
+  useEffect(() => {
+    localStorage.setItem("problemas", JSON.stringify(problemas));
+  }, [problemas]);
   
 
   return (

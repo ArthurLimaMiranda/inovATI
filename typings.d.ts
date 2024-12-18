@@ -23,8 +23,17 @@ export interface Solucao {
 }
 
 export interface Prolema {
-  workhours: Workhours;
+  id: number;
+  titulo: string;
+  descricao: string;
+  inova: boolean;
+  proponenteID: number | null; // Altere para permitir null
+  status: boolean;
+  categoria: string;
+  publicAlvo: string;
+  area: string;
 }
+
 
 export interface Edital {
   id: string;

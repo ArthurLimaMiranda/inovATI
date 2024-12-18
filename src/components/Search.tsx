@@ -1,23 +1,14 @@
 //CRUD e pesquisa de editais
 "use client";
 import React, { useEffect, useState } from "react";
-import { getEditais, urlBase } from "../lib/api";
 import { CardsGrid, CardsRow } from "./Cards";
 import { HeaderOut } from "./Header";
 import { IoGrid } from "react-icons/io5";
 import { MdCreateNewFolder, MdTableRows } from "react-icons/md";
 import { FaSearch } from "react-icons/fa";
-import { parseCookies } from "nookies";
-import decode from "jwt-decode";
-import { NovoEdital } from "./NovoEdital";
+import { useAppContext } from "@/app/contexts/InfoContext";
+import { NovoProblema } from "./NovoProblema";
 
-type User = {
-  id: number;
-  login: string;
-  nome: string;
-  idPerfil: number;
-  senha: string;
-};
 
 interface Card {
   id: number;
@@ -36,7 +27,6 @@ interface Card {
 }
 
 export function Search() {
-  const [user, setUser] = useState<User | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [cardData, setCardData] = useState<Card[]>([]);
@@ -44,43 +34,12 @@ export function Search() {
 
   const [vizualizacao, setVizualizacao] = useState("grid");
 
-  useEffect(() => {
-    //Checa a existência de um token de login e, em caso positivo, decodifica sua criptografia JWT e salva as informações do usuário logado
-    const { "engsoft.token": token } = parseCookies();
-    if (token) {
-      const user: User = decode(token);
-      setUser(user);
-    }
-    const { '_vercel_jwt': token2 } = parseCookies()
-    if(token2){
-      const user: User = decode(token2);
-      setUser(user);
-    }
+  const {
+      usuarios,
+      logado
+    } = useAppContext()
 
-  }, []);
-
-  useEffect(() => {
-     //Recebe os editais do back e os formata para serem mostrados e/ou filtrados na barra de pesquisa
-     getEditais().then((result2) => {
-      const newEditais = result2.map((edital: Card) => ({
-        id: edital.id,
-        nome: edital.nome,
-        categoria: edital.categoria?(edital.categoria):(''),
-        publicoAlvo: edital.publicoAlvo?(edital.publicoAlvo):(''),
-        area: edital.area?(edital.area):(''),
-        dataPublicacao: edital.dataPublicacao,
-        dataInicial: edital.dataInicial,
-        dataFinal: edital.dataFinal,
-        resultado: edital.resultado?(edital.resultado):(''),
-        idOrgaoFomento: edital.idOrgaoFomento,
-        criadoPorBot: edital.criadoPorBot,
-        idUsuario: edital.idUsuario,
-        link: `${urlBase}edital/${edital.id}/pdf`,
-      }));
-      setCardData(newEditais);
-      setFilteredCards(newEditais);
-    });
-  }, []);
+  const foundUser = usuarios.find((u) => u.id === logado.id);
 
   const searchCards = (searchTerm: string) => {
     //Procura pelo edital pesquisado
@@ -187,7 +146,7 @@ export function Search() {
                       </button>
                     </div>
 
-                    {user && user.idPerfil == 2 && ( //Botão criar edital exclusivo para adms
+                    {logado.isLogado && ((foundUser?.tipo==='representante')||(foundUser?.tipo==='admGeral')) && ( //Botão criar edital exclusivo para adms
                       <>
                         <button
                           onClick={handleOpenModal}
@@ -196,10 +155,9 @@ export function Search() {
                           {" "}
                           <MdCreateNewFolder size={30} />
                         </button>
-                        <NovoEdital
+                        <NovoProblema
                           isOpen={isModalOpen}
                           onClose={handleCloseModal}
-                          user={user}
                           cardData={cardData}
                           filteredEditais={filteredCards}
                           setCardData={setCardData}
@@ -219,6 +177,7 @@ export function Search() {
                   {filteredCards.map((card, index) => //Seta o modo de visualização grid/row
                     vizualizacao === "grid" ? (
                       <CardsGrid
+                        logged={logado.isLogado}
                         key={index}
                         id={card.id}
                         nome={card.nome}
@@ -235,8 +194,6 @@ export function Search() {
                         link={card.link}
                         filteredCards={filteredCards}
                         setFilteredCards={setFilteredCards}
-                        logged={user?.idPerfil == 2 ? true : false}
-                        user={user}
                       />
                     ) : vizualizacao === "row" ? (
                       <CardsRow
@@ -256,8 +213,7 @@ export function Search() {
                         link={card.link}
                         filteredCards={filteredCards}
                         setFilteredCards={setFilteredCards}
-                        logged={user?.idPerfil == 2 ? true : false}
-                        user={user}
+                        logged={logado.isLogado}
                       />
                     ) : null
                   )}

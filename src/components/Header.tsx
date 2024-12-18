@@ -69,6 +69,11 @@ export function HeaderOut(props: HeaderOutProps) { //header não logado
               </Link>
             </li>
             <li className="w-full lg:w-auto">
+              <Link href="/ranking">
+                <p className="py-3 lg:py-0 text-center lg:text-left">Ranking</p>
+              </Link>
+            </li>
+            <li className="w-full lg:w-auto">
               <Link href="/#sobre">
                 <p className="py-3 lg:py-0 text-center lg:text-left">Sobre</p>
               </Link>
@@ -192,7 +197,7 @@ export function HeaderIn(props: HeaderInProps) { //Header logado
             </Link>
             <Link href={`/search`}>
               <button className="hidden lg:flex font-normal border border-white rounded-xl flex-row items-center gap-x-2 py-1 px-3 hover:opacity-60 hover:bg-gray-100">
-                <FaSearch /> Editais
+                <FaSearch /> Problemas
               </button>
             </Link>
             <button onClick={handleLogout} className="hidden lg:flex font-normal border border-white rounded-xl flex-row items-center gap-x-2 py-1 px-3 hover:opacity-60 hover:bg-gray-100">
@@ -247,7 +252,7 @@ export function HeaderIn(props: HeaderInProps) { //Header logado
                     onClick={toggleMenu}
                     className="font-normal border border-white rounded-xl flex flex-row items-center gap-x-2 py-1 px-3 hover:opacity-60 hover:bg-gray-100"
                   >
-                    <FaSearch /> Editais
+                    <FaSearch /> Problemas
                   </button>
                 </Link>
               </li>

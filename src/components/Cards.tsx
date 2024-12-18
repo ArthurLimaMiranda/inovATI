@@ -8,14 +8,6 @@ import { FaRegStar, FaStar } from "react-icons/fa6";
 import { getEditaisFavoritos, removeEditalFavorito, setEditalFavorito } from "@/lib/api";
 import { AuthContext } from "@/app/contexts/AuthContext";
 
-type User = {
-  id: number;
-  login: string;
-  nome: string;
-  idPerfil: number;
-  senha: string;
-};
-
 interface Card {
   id: number;
   nome: string;
@@ -48,7 +40,6 @@ interface CardsProps {
   logged: boolean;
   filteredCards: Card[];
   setFilteredCards: Function;
-  user: User | null
 }
 
 export function CardsGrid(props: CardsProps) {;
@@ -124,26 +115,6 @@ export function CardsGrid(props: CardsProps) {;
               ? `${props.nome.slice(0, 40)}...`
               : props.nome}
           </h3> 
-          {props.user&&(favorited? (
-              <button className="relative group text-[#37B7C3]">
-              <FaStar className="group-hover:hidden" size={26}/>
-              <FaRegStar
-                className="hidden group-hover:block"
-                onClick={handleRemoveFavorite}
-                size={26}
-              />
-              </button>
-            ) : (
-              <button className="relative group text-[#37B7C3]">
-                <FaStar className="hidden group-hover:block" 
-                onClick={handleFavoriteClick}
-                size={26}/>
-                <FaRegStar
-                  className="group-hover:hidden"
-                  size={26}
-                />
-              </button>
-            ))}
           {props.logged && (
             <VerMais
               id={props.id}
@@ -267,26 +238,7 @@ export function CardsRow(props: CardsProps) {
               : props.nome}
           </h3>
           <div className="justify-between flex gap-4 items-center">
-          {props.user&&(favorited? (
-              <button className="relative group text-[#37B7C3]">
-              <FaStar className="group-hover:hidden" size={26}/>
-              <FaRegStar
-                className="hidden group-hover:block"
-                onClick={handleRemoveFavorite}
-                size={26}
-              />
-              </button>
-            ) : (
-              <button className="relative group text-[#37B7C3]">
-                <FaStar className="hidden group-hover:block" 
-                onClick={handleFavoriteClick}
-                size={26}/>
-                <FaRegStar
-                  className="group-hover:hidden"
-                  size={26}
-                />
-              </button>
-            ))}
+
             {props.logged && (
               <VerMais
                 id={props.id}
