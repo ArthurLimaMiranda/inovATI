@@ -5,7 +5,6 @@ import { NovoUsuario } from "./NovoUsuario";
 
 export function DashboardUsuarios() {
   const { usuarios, setUser, logado} = useAppContext();
-  const [newUser, setNewUser] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedType, setSelectedType] = useState<string>("");

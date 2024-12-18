@@ -49,6 +49,7 @@ export function InfoWrapper({ children }: { children: React.ReactNode }) {
         senha: "123",
         descricao: "",
         documentacao: null,
+        empresaVinculo:''
       },
     ];
   });

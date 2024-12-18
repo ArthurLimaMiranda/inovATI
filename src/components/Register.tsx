@@ -68,7 +68,8 @@ export function Register() {
       const newUser: User = {
         id: newId,
         login: login,
-        name: nome,
+        nome: nome,
+        empresaVinculo:'',
         email: email,
         senha: senha,
         tipo: "", // Defina o tipo de usuário, se necessário
