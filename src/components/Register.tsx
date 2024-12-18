@@ -8,13 +8,9 @@ import { useRouter } from "next/navigation";
 import { FaRegEye } from "react-icons/fa6";
 import { AiOutlineLock, AiOutlineMail } from "react-icons/ai";
 import { AuthContext } from "../app/contexts/AuthContext";
-import { parseCookies } from "nookies";
 import { FaRegUserCircle } from "react-icons/fa";
 import { IoEnterOutline } from "react-icons/io5";
 import { MdDriveFileRenameOutline } from "react-icons/md";
-
-import { createUser } from "@/lib/api";
-
 import { MdCreateNewFolder } from "react-icons/md";
 import { NovaDocumentacao } from "./NovaDocumentacao";
 import { useAppContext } from "@/app/contexts/InfoContext";

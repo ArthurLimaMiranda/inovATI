@@ -26,12 +26,13 @@ export interface Prolema {
   id: number;
   titulo: string;
   descricao: string;
-  inova: boolean;
   proponenteID: number | null; // Altere para permitir null
-  status: boolean;
   categoria: string;
   publicAlvo: string;
   area: string;
+  inova: boolean;
+  status: boolean;
+  aprovado:boolean
 }
 
 

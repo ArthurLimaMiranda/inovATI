@@ -3,10 +3,6 @@ import React, { useState } from "react";
 import { LuUserPlus2 } from "react-icons/lu";
 import {User} from "../../typings";
 
-interface NumberProps {
-  setNewUser: Function;
-  newUser: boolean;
-}
 export function NovoUsuario() { //Criação de Usuário pelo Admin
   const [showModal, setShowModal] = React.useState(false);
   const [nome, setNome] = useState("");
