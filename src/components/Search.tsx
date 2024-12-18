@@ -12,62 +12,65 @@ import { NovoProblema } from "./NovoProblema";
 
 interface Card {
   id: number;
-  nome: string;
+  titulo: string;
+  descricao: string;
+  proponenteID: number | null; // Altere para permitir null
   categoria: string;
-  publicoAlvo: string;
+  publicAlvo: string;
   area: string;
-  dataPublicacao: string;
-  dataInicial: string;
-  dataFinal: string;
-  resultado: string;
-  idOrgaoFomento: number;
-  idUsuario: number;
-  criadoPorBot: boolean;
-  link: string;
+  inova: boolean;
+  status: boolean;
+  aprovado:boolean
 }
 
 export function Search() {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [cardData, setCardData] = useState<Card[]>([]);
   const [filteredCards, setFilteredCards] = useState<Card[]>([]);
 
-  const [vizualizacao, setVizualizacao] = useState("grid");
+  const [vizualizacao, setVizualizacao] = useState("grid")
 
   const {
       usuarios,
+      problemas,
       logado
     } = useAppContext()
 
   const foundUser = usuarios.find((u) => u.id === logado.id);
 
-  const searchCards = (searchTerm: string) => {
-    //Procura pelo edital pesquisado
-    const lowerCaseSearch = searchTerm.toLowerCase().trim();
+  const getFilteredProblems = () => {
+    if (!problemas) return [];
 
-    const filtered = cardData.filter((card) =>
-      card.nome.toLowerCase().includes(lowerCaseSearch)
-    );
-
-    setFilteredCards(filtered);
+    return problemas.filter((problema) => {
+      if (problema.inova) {
+        return true; // Todos usuários podem ver problemas da Inova
+      }
+      if (!problema.inova && ((foundUser?.tipo === "professor")||(foundUser?.tipo === "admGeral")||(foundUser?.tipo === "admATI"))) {
+        return true; // Apenas professores podem ver problemas da ATI
+      }
+      return false;
+    });
   };
 
+  useEffect(() => {
+    const filtered = getFilteredProblems().filter((problema) =>
+      problema.titulo.toLowerCase().includes(searchTerm.toLowerCase().trim())
+    );
+    setFilteredCards(filtered);
+  }, [searchTerm, problemas, foundUser]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    //Detecta o aperto de enter na barra de pesquisa
     if (e.key === "Enter") {
-      searchCards(searchTerm);
+      // Atualiza a pesquisa ao pressionar Enter
+      const filtered = getFilteredProblems().filter((problema) =>
+        problema.titulo.toLowerCase().includes(searchTerm.toLowerCase().trim())
+      );
+      setFilteredCards(filtered);
     }
   };
 
- ////Abre e fecha a janela modal
- const handleOpenModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => { //Fecha modal criar Novo Edital
-    setIsModalOpen(false);
-  };
+  const handleOpenModal = () => setIsModalOpen(true);
+  const handleCloseModal = () => setIsModalOpen(false);
 
   return (
     <>
@@ -98,7 +101,7 @@ export function Search() {
                 Pesquisar
               </p>
               <p className="text-white font-[400] text-2xl pb-10 px-8 lg:px-96 text-center">
-                Descubra editais relevantes para você
+                Descubra problemas relevantes para você
               </p>
             </div>
             {/* -------------- BARRA DE PESQUISA -------------- */}
@@ -110,15 +113,14 @@ export function Search() {
                     placeholder="Buscar editais..."
                     className="text-gray-400 text-lg pr-2 focus:ring-0 focus:border-1 focus:outline-none appearance-none leading-tight focus:border-white placeholder:text-generic-fields w-full border-none outline-none rounded-xl py-[1em]"
                     value={searchTerm}
-                    onChange={(e) => {setSearchTerm(e.target.value); searchCards(e.target.value)}}
+                    onChange={(e) => setSearchTerm(e.target.value)}
                     onKeyDown={handleKeyDown}
                   />
-                  <button
-                    onClick={()=>searchCards(searchTerm)}
-                    className="flex items-center justify-center bg-[#37B7C3] rounded-2xl px-5 py-5 hover:opacity-60"
+                  <div
+                    className="flex items-center justify-center bg-[#37B7C3] rounded-2xl px-5 py-5"
                   >
                     <FaSearch className="text-white" />
-                  </button>
+                  </div>
                 </div>
               </div>
 
@@ -126,7 +128,7 @@ export function Search() {
               <div className="flex flex-col mx-4 lg:mx-40 rounded-3xl bg-white border-2 border-[#088395] mb-16">
                 <div className="border-b grid grid-cols-3 gap-2 w-full items-center px-4 lg:px-14 py-4">
                   <p className="text-lg lg:text-xl">
-                    Total de {filteredCards.length} editais disponíveis
+                    Total de {filteredCards.length} problemas disponíveis
                   </p>
                   <div />
                   <div className="flex flex-row items-center gap-x-5 justify-end">
@@ -176,40 +178,30 @@ export function Search() {
                         logged={logado.isLogado}
                         key={index}
                         id={card.id}
-                        nome={card.nome}
-                        categoria={card.categoria}
-                        publicoAlvo={card.publicoAlvo}
                         area={card.area}
-                        dataPublicacao={card.dataPublicacao}
-                        dataInicial={card.dataInicial}
-                        dataFinal={card.dataFinal}
-                        resultado={card.resultado}
-                        idOrgaoFomento={card.idOrgaoFomento}
-                        idUsuario={card.idUsuario}
-                        criadoPorBot={card.criadoPorBot}
-                        link={card.link}
+                        categoria={card.categoria}
+                        descricao={card.descricao}
+                        inova={card.inova}
+                        proponenteID={card.proponenteID}
+                        publicAlvo={card.publicAlvo}
+                        titulo={card.titulo}
                         filteredCards={filteredCards}
                         setFilteredCards={setFilteredCards}
                       />
                     ) : vizualizacao === "row" ? (
                       <CardsRow
+                        logged={logado.isLogado}
                         key={index}
                         id={card.id}
-                        nome={card.nome}
-                        categoria={card.categoria}
-                        publicoAlvo={card.publicoAlvo}
                         area={card.area}
-                        dataPublicacao={card.dataPublicacao}
-                        dataInicial={card.dataInicial}
-                        dataFinal={card.dataFinal}
-                        resultado={card.resultado}
-                        idOrgaoFomento={card.idOrgaoFomento}
-                        idUsuario={card.idUsuario}
-                        criadoPorBot={card.criadoPorBot}
-                        link={card.link}
+                        categoria={card.categoria}
+                        descricao={card.descricao}
+                        inova={card.inova}
+                        proponenteID={card.proponenteID}
+                        publicAlvo={card.publicAlvo}
+                        titulo={card.titulo}
                         filteredCards={filteredCards}
                         setFilteredCards={setFilteredCards}
-                        logged={logado.isLogado}
                       />
                     ) : null
                   )}

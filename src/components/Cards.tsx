@@ -1,116 +1,87 @@
 //Cards para a pré vizualização dos editais, em grid e em row
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import Image from "next/image";
-import finep from "../../public/images/inova.png";
-import facepe from "../../public/images/ati.png";
 import { VerMais } from "./VerMais";
-import { FaRegStar, FaStar } from "react-icons/fa6";
-import { AuthContext } from "@/app/contexts/AuthContext";
+import { AuthContext } from "@/app/contexts/AuthContext"
+import inova from "../../public/images/inova.png";
+import ati from "../../public/images/ati.png";
 
 interface Card {
   id: number;
-  nome: string;
+  titulo: string;
+  descricao: string;
+  proponenteID: number | null; // Altere para permitir null
   categoria: string;
-  publicoAlvo: string;
+  publicAlvo: string;
   area: string;
-  dataPublicacao: string;
-  dataInicial: string;
-  dataFinal: string;
-  resultado: string;
-  idOrgaoFomento: number;
-  criadoPorBot: boolean;
-  link: string;
+  inova: boolean;
+  status: boolean;
+  aprovado:boolean
 }
 
 interface CardsProps {
   id: number;
-  nome: string;
+  titulo: string;
   categoria: string;
-  publicoAlvo: string;
   area: string;
-  dataPublicacao: string;
-  dataInicial: string;
-  dataFinal: string;
-  resultado: string;
-  idOrgaoFomento: number;
-  idUsuario: number;
-  criadoPorBot: boolean;
-  link: string;
+  descricao: string;
+  publicAlvo: string;
+  inova: boolean;
+  proponenteID: number | null;
   logged: boolean;
   filteredCards: Card[];
   setFilteredCards: Function;
 }
 
 export function CardsGrid(props: CardsProps) {;
-  const [favorited, setFavorited] = useState(false);
-  const userInfo = useContext(AuthContext).user;
 
   return (
-    <div className="border rounded-lg shadow-md h-auto sm:h-[38vh] flex flex-col">
+    <div className="border rounded-lg shadow-md h-auto flex flex-col">
       <div className="relative border-b px-4 sm:px-8">
-      {props.idOrgaoFomento === 1 ? (
+        {props.inova ? (
           <Image
-            src={facepe}
-            alt="Descrição da imagem do FACEPE"
+            src="/images/inova.png"
+            alt="Logo do INOVA"
             className="object-fill w-full"
+            width={200}
+            height={200}
           />
         ) : (
           <Image
-            src={finep}
-            alt="Descrição da imagem da FINEP"
+            src="/images/ati.png"
+            alt="Logo do ATI"
             className="object-fill w-full"
+            width={200}
+            height={200}
           />
         )}
       </div>
-      <div className="flex flex-col gap-y-2 sm:gap-y-3 items-center py-4 px-4 sm:px-6">
-        <div className="flex flex-col sm:flex-row justify-end w-full items-center gap-y-2 sm:gap-x-10">
-          <h3 className="text-base sm:text-lg font-semibold text-start  w-full">
-            {props.nome.length > 40
-              ? `${props.nome.slice(0, 40)}...`
-              : props.nome}
-          </h3> 
-          {props.logged && (
-            <VerMais
+      <div className="flex flex-col gap-y-2 sm:gap-y-3 items-start py-4 px-4 sm:px-6">
+        <p className="text-base sm:text-lg font-semibold text-start w-full">
+          {props.titulo.length > 40
+            ? `${props.titulo.slice(0, 40)}...`
+            : props.titulo}
+        </p>
+        <p className="text-gray-600 text-md">
+          Categoria: {props.categoria}
+        </p>
+        <p className="text-gray-600 text-md">
+          Área: {props.area}
+        </p>
+        <div className="flex justify-end w-full">
+          <VerMais
+              logged={props.logged}
               id={props.id}
-              nome={props.nome}
-              categoria={props.categoria}
-              publicoAlvo={props.publicoAlvo}
               area={props.area}
-              dataPublicacao={props.dataPublicacao}
-              dataInicial={props.dataInicial}
-              dataFinal={props.dataFinal}
-              resultado={props.resultado}
-              idOrgaoFomento={props.idOrgaoFomento}
-              idUsuario={props.idUsuario}
-              criadoPorBot={props.criadoPorBot}
-              link={props.link}
-              editar={true}
+              categoria={props.categoria}
+              descricao={props.descricao}
+              inova={props.inova}
+              proponenteID={props.proponenteID}
+              publicAlvo={props.publicAlvo}
+              titulo={props.titulo}
               filteredCards={props.filteredCards}
               setFilteredCards={props.setFilteredCards}
             />
-          )}
-        </div>
-
-        <div className="flex flex-col sm:flex-row items-center w-full justify-between gap-y-2 sm:gap-x-10">
-          <p className="text-gray-600">Publicação: {props.dataPublicacao}</p>
-          <VerMais
-            id={props.id}
-            nome={props.nome}
-            categoria={props.categoria}
-            publicoAlvo={props.publicoAlvo}
-            area={props.area}
-            dataPublicacao={props.dataPublicacao}
-            dataInicial={props.dataInicial}
-            dataFinal={props.dataFinal}
-            resultado={props.resultado}
-            idOrgaoFomento={props.idOrgaoFomento}
-            idUsuario={props.idUsuario}
-            criadoPorBot={props.criadoPorBot}
-            link={props.link}
-            editar={false}
-            filteredCards={props.filteredCards}
-            setFilteredCards={props.setFilteredCards}
-          />
         </div>
       </div>
     </div>
@@ -118,78 +89,48 @@ export function CardsGrid(props: CardsProps) {;
 }
 
 export function CardsRow(props: CardsProps) {
-  const [favorited, setFavorited] = useState(false);
-  const userInfo = useContext(AuthContext).user;
 
   return (
     <div className="border rounded-lg shadow-md w-full flex flex-col md:flex-row">
       <div className="relative border-b md:border-r px-5 py-4 md:w-[30%] flex items-center justify-center">
-        
-        {props.idOrgaoFomento === 1 ? (
+        {props.inova ? (
           <Image
-            src={facepe}
-            alt="Descrição da imagem do FACEPE"
+            src="/images/inova.png"
+            alt="Logo do INOVA"
             width={300}
             height={200}
           />
         ) : (
           <Image
-            src={finep}
-            alt="Descrição da imagem da FINEP"
+            src="/images/ati.png"
+            alt="Logo do ATI"
             width={300}
             height={200}
           />
         )}
-      
       </div>
       <div className="flex flex-col w-full items-center gap-y-6 py-3 px-6">
         <div className="flex flex-row justify-between w-full items-center gap-x-10">
           <h3 className="text-xl font-semibold h-[5vh]">
-            {props.nome.length > 70
-              ? `${props.nome.slice(0, 70)}...`
-              : props.nome}
+            {props.titulo.length > 70
+              ? `${props.titulo.slice(0, 70)}...`
+              : props.titulo}
           </h3>
-          <div className="justify-between flex gap-4 items-center">
 
-            {props.logged && (
-              <VerMais
-                id={props.id}
-                nome={props.nome}
-                categoria={props.categoria}
-                publicoAlvo={props.publicoAlvo}
-                area={props.area}
-                dataPublicacao={props.dataPublicacao}
-                dataInicial={props.dataInicial}
-                dataFinal={props.dataFinal}
-                resultado={props.resultado}
-                idOrgaoFomento={props.idOrgaoFomento}
-                idUsuario={props.idUsuario}
-                criadoPorBot={props.criadoPorBot}
-                link={props.link}
-                editar={true}
-                filteredCards={props.filteredCards}
-                setFilteredCards={props.setFilteredCards}
-              />
-            )}
-          </div>
         </div>
         <div className="flex flex-col md:flex-row items-center w-full justify-between">
-          <p className="text-gray-600">Publicação: {props.dataPublicacao}</p>
+          <p className="text-gray-600">Categoria: {props.categoria}</p>
+          <p className="text-gray-600">Área: {props.area}</p>
           <VerMais
+            logged={props.logged}
             id={props.id}
-            nome={props.nome}
-            categoria={props.categoria}
-            publicoAlvo={props.publicoAlvo}
             area={props.area}
-            dataPublicacao={props.dataPublicacao}
-            dataInicial={props.dataInicial}
-            dataFinal={props.dataFinal}
-            resultado={props.resultado}
-            idOrgaoFomento={props.idOrgaoFomento}
-            idUsuario={props.idUsuario}
-            criadoPorBot={props.criadoPorBot}
-            link={props.link}
-            editar={false}
+            categoria={props.categoria}
+            descricao={props.descricao}
+            inova={props.inova}
+            proponenteID={props.proponenteID}
+            publicAlvo={props.publicAlvo}
+            titulo={props.titulo}
             filteredCards={props.filteredCards}
             setFilteredCards={props.setFilteredCards}
           />

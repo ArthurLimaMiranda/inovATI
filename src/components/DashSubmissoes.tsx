@@ -83,17 +83,6 @@ export function DashSubmissoes() {
     setSelectedProblema(problemaAtualizado);
   };
 
-
-  const removerProblema = (id: number) => {
-    const updatedProblemas = problemas.filter((p) => p.id !== id);
-    setProlema(updatedProblemas);
-    localStorage.setItem("problemas", JSON.stringify(updatedProblemas));
-  };
-  
-  const toggleCardsVisibility = () => {
-    setIsProblemasVisible(!isProblemasVisible);
-  };
-
   return (
     <div className="relative ">
       <div className={`bg-[#C5E2E6]`}>
@@ -187,7 +176,7 @@ export function DashSubmissoes() {
                   <div className="flex flex-col items-center gap-2">
                     <label className="font-semibold">Concição:</label>
                     <select
-                      value={filterAvaliacao === null ? "" : filterInova ? "true" : "false"}
+                      value={filterAvaliacao === null ? "" : filterAvaliacao ? "true" : "false"}
                       onChange={(e) =>
                         setFilterAvaliacao(
                           e.target.value === "true"
@@ -216,7 +205,11 @@ export function DashSubmissoes() {
                       className={`bg-white rounded-xl p-3 mb-4 shadow-md w-[100%] hover:opacity-60 flex flex-col justify-between ${card.id === selectedProblema?.id && "cursor-pointer"} ${isSelected ? (card.id === selectedProblema?.id ? "border bgb" : "opacity-30") : ""}`}
                       onClick={() => {
                         showEditais(card);
-                        setIsSelected(true);
+                        setIsSelected(card.id==selectedProblema?.id?(false):(true));
+                        if(card.id==selectedProblema?.id){
+                          setIsProblemasVisible(false)
+                          setSelectedProblema(null)
+                        }
                       }}
                     >
                       <div className="flex items-start justify-between mb-4">
@@ -231,7 +224,7 @@ export function DashSubmissoes() {
 
           {isProblemasVisible && selectedProblema && (
             <div
-              className="bg-[#F5F5F5] lg:w-[60vw] lg:mr-16 mb-12 h-[80vh] rounded-xl shadow-lg lg:shadow-2xl flex flex-col overflow-y-scroll"
+              className="bg-[#F5F5F5] border-2 lg:w-[60vw] lg:mr-16 mb-12 px-[5%] h-[80vh] rounded-xl shadow-lg lg:shadow-2xl flex flex-col overflow-y-scroll"
               style={{ maxHeight: "80vh", scrollbarWidth: "thin" }}
             >
               <div className="flex items-center justify-center mt-8 border-b py-5">
@@ -256,7 +249,7 @@ export function DashSubmissoes() {
                 <h2 className="font-bold text-2xl text-center">
                   {selectedProblema.titulo}
                 </h2>
-                <p className="text-gray-600 mt-4">{selectedProblema.descricao}</p>
+                <p className="text-gray-600 mt-4 mx-10 border rounded-xl p-5 max-h-40 overflow-y-scroll">{selectedProblema.descricao}</p>
               </div>
 
               <div className="mx-4 mt-6">
