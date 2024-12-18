@@ -1,6 +1,5 @@
 //Modal para a criação de um novo edital, visível apenas para usuários administradores
 "use client";
-import { Prolema } from "../../typings";
 import { useAppContext } from "@/app/contexts/InfoContext";
 import React, { useEffect, useState } from "react";
 
@@ -20,9 +19,10 @@ export function NovoProblema(props: ModalProps) {
     id: newId,
     titulo: "",
     descricao: "",
-    inova: false,
     proponenteID: logado.id,
+    inova: false,
     status: false,
+    aprovado: false,
     categoria: "",
     publicAlvo: "",
     area: "",

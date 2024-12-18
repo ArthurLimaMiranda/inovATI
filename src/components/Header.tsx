@@ -1,11 +1,11 @@
 //Header para navegação dentro e fora da área logada
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { AiOutlineDashboard } from "react-icons/ai";
 import { FaBars, FaRegEye } from "react-icons/fa6";
 import { IoEnterOutline } from "react-icons/io5";
-import { parseCookies, destroyCookie } from "nookies";
+import { destroyCookie } from "nookies";
 import { IoIosHome } from "react-icons/io";
 import { FaSearch, FaTimes } from "react-icons/fa";
 import { useAppContext } from "@/app/contexts/InfoContext";

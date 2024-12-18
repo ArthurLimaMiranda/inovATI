@@ -1,35 +1,25 @@
 //Dashboard para a vizualização de editais favoritados e criação de pré-projeto
 "use client";
-import { Solucao, Noticias, Prolema, Edital, Ranking, Empresa, User, Equipe, Logado } from "../../typings";
-import React, { useContext, useEffect, useState } from "react";
-import {
-  FaChevronDown,
-  FaChevronUp,
-  FaFileDownload,
-  FaFileUpload,
-  FaRegStar,
-  FaRegTrashAlt,
-  FaSearch,
-  FaStar,
-} from "react-icons/fa";
-import { useRouter } from "next/navigation";
+import { Prolema} from "../../typings";
+import React, { useEffect, useState } from "react";
+import { FaRegStar } from "react-icons/fa";
 import Image from "next/image";
 import ati from "../../public/images/ati.png";
 import inova from "../../public/images/inova.png";
-import { urlBase } from "@/lib/api";
+import { Switch } from "@headlessui/react";
 import { useAppContext } from "@/app/contexts/InfoContext";
 
-export function DashProblemas() {
-  const { problemas } = useAppContext();
+export function DashSubmissoes() {
+  const { problemas, setProlema, usuarios } = useAppContext();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filterInova, setFilterInova] = useState<boolean | null>(null);
   const [filterStatus, setFilterStatus] = useState<boolean | null>(null);
+  const [filterAvaliacao, setFilterAvaliacao] = useState<boolean | null>(null);
   const [filteredProblemas, setFilteredProblemas] = useState<Prolema[]>(problemas);
   
   const [isSelected, setIsSelected] = useState(false);
   const [selectedProblema, setSelectedProblema] = useState<Prolema | null>(null);
   const [isProblemasVisible, setIsProblemasVisible] = useState(false);
-
 
   useEffect(() => {
     let filtered = problemas;
@@ -50,9 +40,13 @@ export function DashProblemas() {
     if (filterStatus !== null) {
       filtered = filtered.filter((problema) => problema.status === filterStatus);
     }
+    
+    if (filterAvaliacao !== null) {
+      filtered = filtered.filter((problema) => problema.aprovado === filterAvaliacao);
+    }
 
     setFilteredProblemas(filtered);
-  }, [searchTerm, filterInova, filterStatus, problemas]);
+  }, [searchTerm, filterInova, filterStatus, filterAvaliacao, problemas]);
 
   function showEditais(card: Prolema) { //Expõe editais
     const selectedProblema = problemas.find((problema) => problema.id === card.id);
@@ -68,8 +62,36 @@ export function DashProblemas() {
 
   const [isCardsVisible, setIsCardsVisible] = useState(false);
 
+  const atualizarProblemas = (problemaAtualizado: Prolema) => {
+    const novosProblemas = problemas.map((problema) =>
+      problema.id === problemaAtualizado.id ? problemaAtualizado : problema
+    );
+    setProlema(novosProblemas);
+    localStorage.setItem("problemas", JSON.stringify(novosProblemas));
+  };
+
+  const toggleStatus = (problema: Prolema) => {
+    const problemaAtualizado = { ...problema, status: !problema.status };
+    atualizarProblemas(problemaAtualizado);
+    setSelectedProblema(problemaAtualizado);
+  };
+
+  // Alterna a aprovação do problema
+  const toggleAprovacao = (problema: Prolema) => {
+    const problemaAtualizado = { ...problema, aprovado: !problema.aprovado };
+    atualizarProblemas(problemaAtualizado);
+    setSelectedProblema(problemaAtualizado);
+  };
+
+
+  const removerProblema = (id: number) => {
+    const updatedProblemas = problemas.filter((p) => p.id !== id);
+    setProlema(updatedProblemas);
+    localStorage.setItem("problemas", JSON.stringify(updatedProblemas));
+  };
+  
   const toggleCardsVisibility = () => {
-    setIsCardsVisible(!isCardsVisible);
+    setIsProblemasVisible(!isProblemasVisible);
   };
 
   return (
@@ -119,8 +141,8 @@ export function DashProblemas() {
                   
                 </div>
 
-                <div>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-row justify-between gap-x-4">
+                  <div className="flex flex-col items-center gap-2">
                     <label className="font-semibold">Inova:</label>
                     <select
                       value={filterInova === null ? "" : filterInova ? "true" : "false"}
@@ -141,8 +163,7 @@ export function DashProblemas() {
                     </select>
                   </div>
 
-                  {/* Filtro: Status */}
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-col items-center gap-2">
                     <label className="font-semibold">Status:</label>
                     <select
                       value={filterStatus === null ? "" : filterStatus ? "true" : "false"}
@@ -160,6 +181,27 @@ export function DashProblemas() {
                       <option value="">Todos</option>
                       <option value="true">Ativo</option>
                       <option value="false">Inativo</option>
+                    </select>
+                  </div>
+
+                  <div className="flex flex-col items-center gap-2">
+                    <label className="font-semibold">Concição:</label>
+                    <select
+                      value={filterAvaliacao === null ? "" : filterInova ? "true" : "false"}
+                      onChange={(e) =>
+                        setFilterAvaliacao(
+                          e.target.value === "true"
+                            ? true
+                            : e.target.value === "false"
+                            ? false
+                            : null
+                        )
+                      }
+                      className="border border-gray-300 rounded px-4 py-2"
+                    >
+                      <option value="">Todos</option>
+                      <option value="true">Aprovado</option>
+                      <option value="false">Não avaliado   </option>
                     </select>
                   </div>
                 </div>
@@ -209,36 +251,106 @@ export function DashProblemas() {
                   />
                 )}
               </div>
-              <div className="flex text-center items-center justify-center w-full mt-6">
-                <p className="font-bold text-lg text-center">
+
+              <div className="flex flex-col items-center mt-6">
+                <h2 className="font-bold text-2xl text-center">
                   {selectedProblema.titulo}
-                </p>
+                </h2>
+                <p className="text-gray-600 mt-4">{selectedProblema.descricao}</p>
               </div>
 
               <div className="mx-4 mt-6">
-                <div className="flex flex-col gap-y-6">
+                <div className="flex flex-col px-10 gap-y-10">
+
                   <div className="flex items-center gap-x-2 text-center">
-                    <p className="font-semibold">Órgão de Fomento:</p>
-                    <p>
-                      {selectedProblema.inova === true ? "FACEPE" : "FINEP"}
-                    </p>
+                    <p className="font-semibold">Proponente (e-mail):</p>
+                    <p>{ usuarios.find((u) => u.id === selectedProblema.proponenteID)?.email || "Não especificado"}</p>
                   </div>
-                  <div className="flex items-center gap-x-2 text-center">
-                    <p className="font-semibold">Área:</p>
-                    <p>{selectedProblema.area}</p>
+
+                  <div className="flex flex-row justify-between gap-x-5">
+                    <div className="flex items-center gap-x-2 text-center">
+                      <p className="font-semibold">Área:</p>
+                      <p>{selectedProblema.area}</p>
+                    </div>
+
+                    <div className="flex items-center gap-x-2 text-center">
+                      <p className="font-semibold">Categoria:</p>
+                      <p>{selectedProblema.categoria}</p>
+                    </div>
+
+                    <div className="flex items-center gap-x-2 text-center">
+                      <p className="font-semibold">Público-alvo:</p>
+                      <p>{selectedProblema.publicAlvo}</p>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-x-2 text-center">
-                    <p className="font-semibold">Categoria:</p>
-                    <p>{selectedProblema.categoria}</p>
+
+                  <div className="flex flex-row justify-between">
+                    <div>
+                      <div className="flex items-center gap-x-2 text-center">
+                      <p className="font-semibold">Visibilidade:</p>
+                      <div className="flex items-center gap-2">
+                        <Switch
+                          checked={selectedProblema.status}
+                          onChange={() => toggleStatus(selectedProblema)}
+                          className={`${
+                            selectedProblema.status ? "bg-blue-600" : "bg-gray-400"
+                          } relative inline-flex items-center h-6 rounded-full w-11`}
+                        >
+                          <span
+                            className={`${
+                              selectedProblema.status ? "translate-x-6" : "translate-x-1"
+                            } inline-block w-4 h-4 transform bg-white rounded-full transition-transform`}
+                          />
+                        </Switch>
+                        <label className="text-sm font-medium">
+                          {selectedProblema.status ? "Ativo" : "Inativo"}
+                        </label>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-x-2 text-center">
+                      <p className="font-semibold">Status:</p>
+                      <div className="flex items-center gap-2">
+                        <Switch
+                          checked={selectedProblema.aprovado}
+                          onChange={() => toggleAprovacao(selectedProblema)}
+                          className={`${
+                            selectedProblema.aprovado ? "bg-green-600" : "bg-gray-400"
+                          } relative inline-flex items-center h-6 rounded-full w-11`}
+                        >
+                          <span
+                            className={`${
+                              selectedProblema.aprovado ? "translate-x-6" : "translate-x-1"
+                            } inline-block w-4 h-4 transform bg-white rounded-full transition-transform`}
+                          />
+                        </Switch>
+                        <label className="text-sm font-medium">
+                          {selectedProblema.aprovado ? "Aprovado" : "Não Aprovado"}
+                        </label>
+                      </div>
+                    </div>
+                    </div>
+
+                    <button
+                      className="bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-700"
+                      onClick={() => {
+                        if (confirm("Tem certeza que deseja apagar este problema?")) {
+                          setProlema((prevProblemas) =>
+                            prevProblemas.filter((problema) => problema.id !== selectedProblema.id)
+                          );
+                          setIsProblemasVisible(false);
+                        }
+                      }}
+                    >
+                      Apagar
+                    </button>
                   </div>
-                  <div className="flex items-center gap-x-2 text-center">
-                    <p className="font-semibold">Público-alvo:</p>
-                    <p>{selectedProblema.publicAlvo}</p>
-                  </div>
+
                 </div>
               </div>
-            </div>
-          )}
+            </div>)
+          }
+
         </div>
       </div>
     </div>

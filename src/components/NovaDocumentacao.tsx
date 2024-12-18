@@ -1,7 +1,6 @@
 //Modal para a criação de um novo edital, visível apenas para usuários administradores
 "use client";
-import { criarEdital, criarPreProjeto, uploadFile, urlBase } from "@/lib/api";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { FaFileUpload } from "react-icons/fa";
 import { IoIosArrowRoundBack } from "react-icons/io";
 

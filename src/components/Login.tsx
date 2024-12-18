@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { FaRegEye } from "react-icons/fa6";
 import { AiOutlineLock } from "react-icons/ai";
 import { AuthContext } from "../app/contexts/AuthContext";
-import { parseCookies } from "nookies";
 import { IoMdEyeOff } from "react-icons/io";
 import { IoMdEye } from "react-icons/io";
 import { useAppContext } from "@/app/contexts/InfoContext";

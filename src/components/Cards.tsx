@@ -1,11 +1,10 @@
 //Cards para a pré vizualização dos editais, em grid e em row
 import React, { useContext, useEffect, useState } from "react";
 import Image from "next/image";
-import finep from "../../public/images/FINEP.png";
-import facepe from "../../public/images/Marca-FACEPE.png";
+import finep from "../../public/images/inova.png";
+import facepe from "../../public/images/ati.png";
 import { VerMais } from "./VerMais";
 import { FaRegStar, FaStar } from "react-icons/fa6";
-import { getEditaisFavoritos, removeEditalFavorito, setEditalFavorito } from "@/lib/api";
 import { AuthContext } from "@/app/contexts/AuthContext";
 
 interface Card {
@@ -45,51 +44,6 @@ interface CardsProps {
 export function CardsGrid(props: CardsProps) {;
   const [favorited, setFavorited] = useState(false);
   const userInfo = useContext(AuthContext).user;
-
-  ////Favorita e desfavorita o edital desejado
-  const handleFavoriteClick = async () => {
-    try {
-      await setEditalFavorito(userInfo.id, props.id);
-      setFavorited(true);
-      console.log("Edital favoritado.");
-    } catch (error) {
-      console.error("Erro ao favoritar edital", error);
-    }
-  };
-
-  const handleRemoveFavorite = async () => {
-    const confirmRemoval = confirm(
-      `Deseja desfavoritar o edital: "${props.nome}"?`
-    );
-    if (confirmRemoval) {
-      try {
-        await removeEditalFavorito(userInfo.id, props.id);
-        setFavorited(false);
-      } catch (error) {
-        console.error("Failed to remove edital from favorites:", error);
-        alert("Falha ao remover o edital dos favoritos.");
-      }
-    }
-  };
-  ////
-
-  useEffect(() => {
-    //Puxa os editais favoritados pelo usuário e compara com os editais existentes
-    const fetchEditaisFavoritos = async () => {
-      try {
-        const favoritos = await getEditaisFavoritos(userInfo.id);
-        const isFavorited = favoritos.some(
-          (edital: Card) => edital.id === props.id
-        );
-        setFavorited(isFavorited);
-        console.log("Editais já favoritados.");
-      } catch (error) {
-        console.log("Erro ao expor editais favoritados.");
-      }
-    };
-
-    fetchEditaisFavoritos();
-  }, [userInfo.id, props.id]);
 
   return (
     <div className="border rounded-lg shadow-md h-auto sm:h-[38vh] flex flex-col">
@@ -166,48 +120,6 @@ export function CardsGrid(props: CardsProps) {;
 export function CardsRow(props: CardsProps) {
   const [favorited, setFavorited] = useState(false);
   const userInfo = useContext(AuthContext).user;
-
-  const handleFavoriteClick = async () => {
-    try {
-      await setEditalFavorito(userInfo.id, props.id);
-      setFavorited(true);
-      console.log("Edital favoritado.");
-    } catch (error) {
-      console.error("Erro ao favoritar edital", error);
-    }
-  };
-
-  const handleRemoveFavorite = async () => {
-    const confirmRemoval = confirm(
-      `Deseja desfavoritar o edital: "${props.nome}"?`
-    );
-    if (confirmRemoval) {
-      try {
-        await removeEditalFavorito(userInfo.id, props.id);
-        setFavorited(false);
-      } catch (error) {
-        console.error("Failed to remove edital from favorites:", error);
-        alert("Falha ao remover o edital dos favoritos.");
-      }
-    }
-  };
-
-  useEffect(() => {
-    const fetchEditaisFavoritos = async () => {
-      try {
-        const favoritos = await getEditaisFavoritos(userInfo.id);
-        const isFavorited = favoritos.some(
-          (edital: Card) => edital.id === props.id
-        );
-        setFavorited(isFavorited);
-        console.log("Editais já favoritados.");
-      } catch (error) {
-        console.log("Erro ao expor editais favoritados.");
-      }
-    };
-
-    fetchEditaisFavoritos();
-  }, [userInfo.id, props.id]);
 
   return (
     <div className="border rounded-lg shadow-md w-full flex flex-col md:flex-row">

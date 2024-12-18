@@ -6,8 +6,6 @@ import Image from "next/image";
 import { FaFileDownload } from "react-icons/fa";
 import { AiFillEdit } from "react-icons/ai";
 import { FaSave, FaTrash } from "react-icons/fa";
-import { removerEdital,
-  updateEditais, uploadFile } from "@/lib/api";
 
 interface Card {
   id: number;
@@ -119,64 +117,6 @@ export function VerMais(props: CardsProps) { {/*Modal Ver Mais com informações
     setHoraResultado(props.resultado.split(" ")[1]);
   }
 
-  function handleEditalChanges() {
-    //Lida com a atualização do edital, opção disponivel para usuários administradores
-    const publicacao = `${reFormatDate(dataPublicacao)} ${horaPublicacao}`;
-    const inicio = `${reFormatDate(dataInicial)} ${horaInicial}`;
-    const final = `${reFormatDate(dataFinal)} ${horaFinal}`;
-    const resultado = `${dataResultado} ${horaResultado}`;
-
-    updateEditais(
-      props.id,
-      nomeEdital,
-      categoria,
-      publicoAlvo,
-      area,
-      publicacao,
-      inicio,
-      final,
-      resultado,
-      props.idUsuario,
-      props.idOrgaoFomento,
-      props.criadoPorBot
-    );
-    const updatedMachines = props.filteredCards.map((cards) => {
-      if (cards.id === props.id) {
-        return {
-          ...cards,
-          id: props.id,
-          nome: nomeEdital,
-          categoria: categoria,
-          publicoAlvo: publicoAlvo,
-          area: area,
-          dataPublicacao: publicacao,
-          dataInicial: inicio,
-          dataFinal: final,
-          resultado: resultado,
-          idOrgaoFomento: props.idOrgaoFomento,
-          criadoPorBot: props.criadoPorBot,
-          link: props.link,
-        };
-      }
-
-      return cards;
-    });
-
-    props.setFilteredCards(updatedMachines);
-    setShowModal(false);
-  }
-
-  function removeEdital() {
-    //Apaga o edital do banco de dados
-    if (confirm(`Deseja apagar o edital: "${props.nome}"?`)) {
-      removerEdital(props.id);
-      props.setFilteredCards(
-        props.filteredCards.filter((edital) => edital.id !== props.id)
-      );
-      alert("Edital removido!");
-      setShowModal(false);
-    }
-  }
 
   return (
     <>
@@ -447,25 +387,6 @@ export function VerMais(props: CardsProps) { {/*Modal Ver Mais com informações
                       >
                         <FaFileDownload className="mr-2" /> Baixar Edital
                       </a>
-                    )}
-
-                    {props.editar && (
-                      <div className="flex flex-row gap-x-5">
-                       
-                        <button
-                          onClick={removeEdital}
-                          className="flex items-center px-3 py-2 rounded-md text-white text-semibold cursor-pointer bg-red-500 hover:opacity-60"
-                        >
-                          <FaTrash className="mr-2" /> Remover Edital
-                        </button>
-
-                        <button
-                          onClick={handleEditalChanges}
-                          className="flex items-center px-3 py-2 rounded-md text-white text-semibold cursor-pointer bg-[#088395] hover:opacity-60"
-                        >
-                          <FaSave className="mr-2" /> Salvar Alterações
-                        </button>
-                      </div>
                     )}
                   </div>
                 </div>
