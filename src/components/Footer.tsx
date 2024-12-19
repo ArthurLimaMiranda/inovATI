@@ -2,7 +2,10 @@
 "use client";
 import React from "react";
 
-export function Footer() { {/*Exposição de Informações no final da página */}
+export function Footer() {
+  {
+    /*Exposição de Informações no final da página */
+  }
   return (
     <>
       <footer>
@@ -60,10 +63,10 @@ export function Footer() { {/*Exposição de Informações no final da página *
             <p className="mb-4 text-center">Ou contate-nos por outros meios:</p>
             <p className="mb-4 text-center">
               <a
-                href="mailto:Contato@EditalView.upe.br"
+                href="mailto:Contato@inovAti.upe.br"
                 className="text-gray-600 hover:text-gray-800"
               >
-                Contato@EditalView.upe.br
+                Contato@inovAti.upe.br
               </a>
             </p>
             <div className="flex justify-center space-x-4">

@@ -15,8 +15,8 @@ import rec4 from "../../public/images/rec4.jpg";
 
 import rec5 from "../../public/images/garrafaEncaxangada.jpg";
 
-import facepe from "../../public/images/facepe_img.jpg";
-import finep from "../../public/images/finep_img.jpg";
+import inovaImage from "../../public/images/inovaImage.jpg";
+import atiImage from "../../public/images/atiImage.jpg";
 
 import poli from "../../public/images/poli.png";
 import { Footer } from "./Footer";
@@ -73,7 +73,7 @@ export function DashEditais() {
             <div className="w-full h-[60vh] md:h-[70vh] lg:h-[80vh] bg-[#088395]" />
             <div className="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center gap-y-4 px-4 md:px-8 lg:px-12">
               <p className="text-white text-lg md:text-2xl lg:text-3xl  font-semibold text-center">
-                Encontre os editais ideais para você em um só lugar
+                Encontre informações para você em um só lugar
               </p>
               <p className="text-white text-base md:text-lg lg:text-xl text-center  font-semibold">
                 Acesse as principais oportunidades de apoio à pesquisa
@@ -83,7 +83,7 @@ export function DashEditais() {
                 href="/search"
                 className="flex justify-center leading-none border-none outline-none rounded-xl bg-[#088395] px-4 py-2 md:px-6 md:py-3 text-white font-semibold text-base md:text-lg cursor-pointer mb-4 hover:shadow-button-Home-hover-focus focus:shadow-button-Home-hover-focus items-center flex-row gap-x-3"
               >
-                <p>Comece agora a explorar os editais</p>
+                <p>Comece agora a explorar os problemas e soluções propostos</p>
                 <RiSearchEyeLine />
               </Link>
             </div>
@@ -110,52 +110,56 @@ export function DashEditais() {
               Sobre as Instituições
             </h2>
 
-            {/* Bloco sobre a FACEPE */}
+            {/* Bloco sobre a INOVA */}
             <div className="flex flex-col lg:flex-row items-center justify-center lg:justify-between p-6 lg:p-10 rounded-lg mb-10 lg:mb-16 bg-white shadow-lg">
               <div className="lg:w-1/2 text-center lg:text-left lg:pr-10 order-2 lg:order-1">
                 <h3 className="text-[#3ecad7] text-3xl lg:text-4xl mb-6 font-bold py-3 rounded-lg">
-                  FACEPE
+                  INOVA
                 </h3>
                 <p className="text-gray-700 text-lg lg:text-xl">
-                  A Fundação de Amparo à Ciência e Tecnologia de Pernambuco
-                  (FACEPE) é uma instituição que promove o desenvolvimento
-                  científico e tecnológico do estado. Apoia pesquisas em
-                  diversas áreas do conhecimento, incentivando a produção de
-                  conhecimento e a inovação. Suas iniciativas incluem programas
-                  de fomento à pesquisa, bolsas de estudo e cooperações
-                  internacionais.
+                  O INOVA da Universidade de Pernambuco (UPE) é um núcleo
+                  dedicado à inovação, empreendedorismo e desenvolvimento
+                  tecnológico. Sua missão é promover a pesquisa aplicada,
+                  estimular a criação de startups e fortalecer a conexão entre a
+                  universidade, o setor produtivo e a sociedade. Através de
+                  programas, parcerias e eventos, o INOVA fomenta soluções
+                  inovadoras, impulsionando o desenvolvimento sustentável e
+                  contribuindo para o avanço socioeconômico de Pernambuco e do
+                  Brasil.
                 </p>
               </div>
               <div className="lg:w-1/2 mb-6 lg:mb-0 order-1 lg:order-2">
                 <Image
-                  src={facepe}
+                  src={inovaImage}
                   alt="FACEPE"
                   className="w-full h-auto rounded-lg"
                 />
               </div>
             </div>
 
-            {/* Bloco sobre o FINEP */}
+            {/* Bloco sobre o ATI */}
             <div className="flex flex-col lg:flex-row items-center justify-center lg:justify-between p-6 lg:p-10 rounded-lg bg-white shadow-lg">
               <div className="lg:w-1/2 mt-6 lg:mb-0 order-2 lg:order-1">
                 <Image
-                  src={finep}
+                  src={atiImage}
                   alt="FINEP"
                   className="w-full h-auto rounded-lg"
                 />
               </div>
               <div className="lg:w-1/2 text-center lg:text-left lg:pl-10 order-1 lg:order-2">
                 <h3 className="text-[#3ecad7] text-3xl lg:text-4xl mb-6 font-bold py-3 rounded-lg">
-                  FINEP
+                  ATI
                 </h3>
                 <p className="text-gray-700 text-lg lg:text-xl">
-                  A Financiadora de Estudos e Projetos (FINEP) é uma empresa
-                  pública brasileira vinculada ao Ministério da Ciência,
-                  Tecnologia e Inovações (MCTI). A FINEP apoia a inovação e a
-                  pesquisa científica e tecnológica em empresas, universidades,
-                  institutos tecnológicos e outras entidades. Suas iniciativas
-                  incluem financiamento de projetos, concessão de bolsas e
-                  investimentos em infraestrutura de pesquisa.
+                  As Salas de Aula Aberta do ATI são ambientes projetados para
+                  estimular o aprendizado criativo e colaborativo. Com
+                  infraestrutura moderna e flexível, esses espaços são ideais
+                  para atividades como workshops, cursos e treinamentos,
+                  adaptando-se a diferentes necessidades educacionais. Elas
+                  promovem a troca de conhecimentos e experiências, incentivando
+                  a interação entre estudantes, profissionais e empreendedores
+                  em um ambiente que valoriza a inovação e o desenvolvimento de
+                  habilidades.
                 </p>
               </div>
             </div>
