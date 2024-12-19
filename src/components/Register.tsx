@@ -71,7 +71,11 @@ export function Register() {
         tipo: "", // Defina o tipo de usuário, se necessário
         verified: false,
         descricao: descricao,
-        documentacao: base64Files, // Armazena os arquivos em Base64
+        documentacao: base64Files,
+        membroEquipe: false,
+        inovaEquipe:false,
+        salaDeAulaEquipe:false,
+        equipeNome:''
       };
   
       // Atualizar usuários no estado e salvar no localStorage

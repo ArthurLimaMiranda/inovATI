@@ -19,12 +19,12 @@ export function DashAdm() {
 
   const foundUser = usuarios.find((u) => u.id === logado.id);
 
-  const [currentPage, setCurrentPage] = useState("editais");
+  const [currentPage, setCurrentPage] = useState(((foundUser?.tipo == 'admGeral') || (foundUser?.tipo == 'avaliador'))?"editais":'equipes');
 
   return (
 
     <>
-      <HeaderIn adm={(foundUser?.tipo == 'admGeral') || (foundUser?.tipo == 'admATI')} setPage={setCurrentPage} curPage={currentPage} />
+      <HeaderIn adm={(foundUser?.tipo == 'admGeral') || (foundUser?.tipo == 'admATI')|| (foundUser?.tipo == 'avaliador')} setPage={setCurrentPage} curPage={currentPage} />
       {(currentPage == "editais") && (<DashSubmissoes />)}
       {(currentPage == "users") && (
         <div className={`bg-[${COLORS.bgDark}] h-[100vh] py-24`}>

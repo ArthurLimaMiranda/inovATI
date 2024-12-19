@@ -55,7 +55,10 @@ export function InfoWrapper({ children }: { children: React.ReactNode }) {
   const [noticias, setNoticias] = useState<Noticias[]>([]);
   const [editais, setEdital] = useState<Edital[]>([]);
   const [rankings, setRanking] = useState<Ranking[]>([]);
-  const [equipes, setEquipe] = useState<Equipe[]>([]);
+  const [equipes, setEquipe] = useState<Equipe[]>(() => {
+    const savedEquipes = localStorage.getItem("equipes");
+    return savedEquipes ? JSON.parse(savedEquipes) : [];
+  }); 
   const [problemas, setProlema] = useState<Prolema[]>(() => {
     const savedProblemas = localStorage.getItem("problemas");
     return savedProblemas ? JSON.parse(savedProblemas) : [];
@@ -74,7 +77,11 @@ export function InfoWrapper({ children }: { children: React.ReactNode }) {
         senha: "123",
         descricao: "",
         documentacao: null,
-        empresaVinculo:''
+        empresaVinculo:'',
+        membroEquipe: false,
+        inovaEquipe:false,
+        salaDeAulaEquipe:false,
+        equipeNome:''
       },
     ];
   });
@@ -106,6 +113,10 @@ export function InfoWrapper({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     localStorage.setItem("problemas", JSON.stringify(problemas));
   }, [problemas]);
+
+  useEffect(() => {
+    localStorage.setItem("equipes", JSON.stringify(equipes));
+  }, [equipes]);
 
   useEffect(() => {
     localStorage.setItem("solucoes", JSON.stringify(solucoes));

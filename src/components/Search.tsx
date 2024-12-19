@@ -33,25 +33,44 @@ export function Search() {
   const {
       usuarios,
       problemas,
-      logado
+      logado,
+      equipes
     } = useAppContext()
 
   const foundUser = usuarios.find((u) => u.id === logado.id);
 
   const getFilteredProblems = () => {
     if (!problemas) return [];
-
+  
     return problemas.filter((problema) => {
       if (problema.inova) {
         return true; // Todos usuários podem ver problemas da Inova
       }
-      if (!problema.inova && ((foundUser?.tipo === "professor")||(foundUser?.tipo === "admGeral")||(foundUser?.tipo === "admATI"))) {
-        return true; // Apenas professores podem ver problemas da ATI
+      if (
+        !problema.inova &&
+        (
+          (foundUser?.tipo === "professor") ||
+          (foundUser?.tipo === "admGeral") ||
+          (foundUser?.tipo === "admATI")
+        )
+      ) {
+        return true; // Professores, admGeral e admATI podem ver problemas da ATI
       }
+  
+      // Verifica se o e-mail do usuário está em uma equipe cuja inova seja false
+      const userInNonInovaTeam = equipes.some((equipe) =>
+        equipe.inova === false &&
+        equipe.participantesEmail.includes(foundUser?.email || "")
+      );
+  
+      if (!problema.inova && userInNonInovaTeam) {
+        return true; // Usuário em uma equipe não Inova pode ver problemas da ATI
+      }
+  
       return false;
     });
   };
-
+  
   useEffect(() => {
     const filtered = getFilteredProblems().filter((problema) =>
       problema.titulo.toLowerCase().includes(searchTerm.toLowerCase().trim())

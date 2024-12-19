@@ -5,6 +5,10 @@ import ati from "../../public/images/ati.png";
 import Image from "next/image";
 import { FaFileDownload } from "react-icons/fa";
 import { AiFillEdit } from "react-icons/ai";
+import { NovaSolucao } from "./NovaSolucao";
+import { MdCreateNewFolder } from "react-icons/md";
+import { NovoProblema } from "./NovoProblema";
+import { useAppContext } from "@/app/contexts/InfoContext";
 
 interface Card {
   id: number;
@@ -35,6 +39,18 @@ interface CardsProps {
 
 export function VerMais(props: CardsProps) { {/*Modal Ver Mais com informações dos editais */}
   const [showModal, setShowModal] = useState(false);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const {
+        usuarios,
+        problemas,
+        logado
+      } = useAppContext()
+  
+
+  const handleOpenModal = () => setIsModalOpen(true);
+  const handleCloseModal = () => setIsModalOpen(false);
 
   useEffect(() => {
     //Bloqueia o scroll pela página quando o modal está aberto
@@ -138,6 +154,21 @@ export function VerMais(props: CardsProps) { {/*Modal Ver Mais com informações
                     >
                       Voltar
                     </button>
+
+                    {logado.isLogado&&<>
+                      <button
+                        onClick={handleOpenModal}
+                        className="flex items-center px-3 py-2 rounded-md text-black text-semibold cursor-pointer border border-[#088395] hover:opacity-60"
+                      >
+                        Submeter Solução
+                      </button>
+                      <NovaSolucao
+                        problemaID={props.id}
+                        isOpen={isModalOpen}
+                        onClose={handleCloseModal}
+                      />
+
+                  </>}
                   </div>
                 </div>
               </div>

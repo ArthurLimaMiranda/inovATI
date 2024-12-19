@@ -1,6 +1,6 @@
 //Cadastro de novo usuário
 "use client";
-import {Equipe, User} from "../../typings";
+import {User} from "../../typings";
 
 import React, { useContext, useEffect, useState } from "react";
 import Link from "next/link";
@@ -30,37 +30,6 @@ export function Equipe() {
 
   const [badRegister, setBadRegister] = useState(false);
   const router = useRouter();
-
-  async function handleRegister() {
-    // Verificar se o time já existe
-    const teamExists = equipes.some((equipe) => equipe.nome === nome);
-    if (teamExists) {
-      setBadRegister(true);
-      return;
-    }
-  
-    try {
-      const newId = equipes.length > 0 ? 
-				equipes.reduce((maxId, equipe) => Math.max(maxId, equipe.id), 0) + 1 :
-				 1;
-
-      const newTeam: Equipe = {
-        id: newId,
-        nome: nome
-      };
-
-			setEquipe((prevEquipes) => {
-				const updatedTeams = [...prevEquipes, newTeam];
-				localStorage.setItem("equipes", JSON.stringify(updatedTeams));
-				return updatedTeams;
-			});
-  
-      router.push("/");
-    } catch (error) {
-      console.error("Erro ao registrar equipe:", error);
-      setBadRegister(true);
-    }
-  }
 
   useEffect(() => {
     if (logado.isLogado) {

@@ -87,7 +87,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }){
 
   return (
     <AuthContext.Provider value={{
-      user: user || { id: 0, login: "", descricao:'', documentacao:[], email:'', nome:'', empresaVinculo:'', senha: '', tipo:'', verified:false},
+      user: user || { id: 0, login: "", descricao:'', documentacao:[], email:'', nome:'', empresaVinculo:'', senha: '', tipo:'', verified:false, equipeNome:'',inovaEquipe:false, membroEquipe:false,salaDeAulaEquipe:false},
       isAuthenticated,
       signIn
     }}>

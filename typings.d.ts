@@ -5,7 +5,7 @@ export interface Solucao {
   id: number;
   titulo: string;
   descricao: string;
-  equipeID: number | null; // Altere para permitir null
+  equipeNome: string; // Altere para permitir null
   pitchLink: string;
   inova: boolean;
   status: boolean;
@@ -50,7 +50,11 @@ export type User = {
   senha:string,
   descricao: string
   documentacao: string[]
-  empresaVinculo:string
+  empresaVinculo:string,
+  membroEquipe: boolean,
+  inovaEquipe:boolean,
+  salaDeAulaEquipe:boolean,
+  equipeNome:string
 };
 
 
@@ -61,5 +65,7 @@ export type Logado = {
 
 export interface Equipe {
   id:number,
-  nome:string
+  nome:string,
+  participantesEmail: string,
+  inova:boolean,
 }

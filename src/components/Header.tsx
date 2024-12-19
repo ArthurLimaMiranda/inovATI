@@ -161,7 +161,7 @@ export function HeaderIn(props: HeaderInProps) { //Header logado
             </p>
           </Link>
           <ul className={`hidden lg:flex gap-x-6 items-center justify-center`}>
-            <li>
+            {props.adm&&<li>
               <button onClick={() => props.setPage("editais")}>
                 <p
                   className={`${props.curPage == "editais" && "underline underline-offset-4 font-semibold"} hover:opacity-50`}
@@ -169,8 +169,8 @@ export function HeaderIn(props: HeaderInProps) { //Header logado
                   Submissões
                 </p>
               </button>
-            </li>
-            <li className={`${!props.adm && "hidden"}`}>
+            </li>}
+            {props.adm&&<li className={`${!props.adm && "hidden"}`}>
               <button onClick={() => props.setPage("users")}>
                 <p
                   className={`${props.curPage == "users" && "underline underline-offset-4 font-semibold"} hover:opacity-50`}
@@ -178,8 +178,8 @@ export function HeaderIn(props: HeaderInProps) { //Header logado
                   Usuários
                 </p>
               </button>
-            </li>
-            <li className={`${!props.adm && "hidden"}`}>
+            </li>}
+            <li>
               <button onClick={() => props.setPage("equipes")}>
                 <p
                   className={`${props.curPage == "equipes" && "underline underline-offset-4 font-semibold"} hover:opacity-50`}
@@ -189,13 +189,13 @@ export function HeaderIn(props: HeaderInProps) { //Header logado
               </button>
             </li>
             <li>
-              <button onClick={() => props.setPage("empresas")}>
+            {props.adm&&<button onClick={() => props.setPage("empresas")}>
                 <p
                   className={`${props.curPage == "empresas" && "underline underline-offset-4 font-semibold"} hover:opacity-50`}
                 >
                   Empresas
                 </p>
-              </button>
+              </button>}
             </li>
           </ul>
           <div className="flex flex-row justify-end gap-x-5 items-center">

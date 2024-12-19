@@ -33,6 +33,10 @@ export function NovoUsuario() { //Criação de Usuário pelo Admin
         descricao: '',
         empresaVinculo:'',
         documentacao: [],
+        membroEquipe: false,
+        inovaEquipe:false,
+        salaDeAulaEquipe:false,
+        equipeNome:''
       };
 
       setUser((prevUsuarios) => {
@@ -153,6 +157,7 @@ export function NovoUsuario() { //Criação de Usuário pelo Admin
                     <option value="professor">Professor</option>
                     <option value="aluno">Aluno</option>
                     <option value="empresa">Empresa</option>
+                    <option value="avaliador">Avaliador</option>
                   </select>
 
                   <button

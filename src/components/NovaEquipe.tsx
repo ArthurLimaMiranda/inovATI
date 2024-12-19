@@ -7,6 +7,8 @@ import { Equipe, User } from "../../typings";
 export function NovaEquipe() {
   const [showModal, setShowModal] = React.useState(false);
   const [nome, setNome] = useState("");
+  const [membros, setMembros] = useState("");
+  const [inova, setInova] = useState(true);
 
   const {
     usuarios,
@@ -14,6 +16,8 @@ export function NovaEquipe() {
     setEquipe,
     logado
   } = useAppContext()
+
+  const foundUser = usuarios.find((u) => u.id === logado.id);
 
   async function handleNewTeam() {
     // Verificar se o time já existe
@@ -25,7 +29,9 @@ export function NovaEquipe() {
 
       const newTeam: Equipe = {
         id: newId,
-        nome: nome
+        nome: nome,
+        participantesEmail:membros,
+        inova: inova
       };
 
       setEquipe((prevEquipes) => {
@@ -43,6 +49,8 @@ export function NovaEquipe() {
   function resetModal() {
     setShowModal(true);
     setNome("");
+    setMembros("")
+    setInova(true)
   }
 
   return (
@@ -86,6 +94,36 @@ export function NovaEquipe() {
                     required
                     title="Nome"
                   />
+
+                  <input
+                    className="focus:border-green-1100 border-transparent focus:ring-0 bg-white border-white placeholder:text-gray-200 text-gray-800 appearance-none rounded-sm w-full py-2 px-4 leading-tight"
+                    id="teamEmail"
+                    type={"text"}
+                    placeholder="Email dos participantes:"
+                    value={membros}
+                    onChange={(e) => {
+                      setMembros(e.target.value);
+                    }}
+                    required
+                    title="Nome"
+                  />
+                  {((foundUser?.tipo == 'admGeral') || (foundUser?.tipo == 'professor'))&&
+                  <div className="flex items-center justify-between my-5">
+                    <label className="font-semibold text-gray-700">ATI</label>
+                    <div
+                      className={`w-14 h-8 flex items-center rounded-full p-1 cursor-pointer ${
+                        inova ? "bg-red-300" : "bg-green-300"
+                      }`}
+                      onClick={() => setInova(!inova)}
+                    >
+                      <div
+                        className={`h-6 w-6 rounded-full shadow-md transform ${
+                          inova ? "translate-x-6 bg-white" : "translate-x-0 bg-gray-400"
+                        }`}
+                      />
+                    </div>
+                    <label className="font-semibold text-gray-700">Inova</label>
+                  </div>}
 
                   <button
                     title="Cadastrar"
