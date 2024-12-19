@@ -174,6 +174,15 @@ export function HeaderIn(props: HeaderInProps) { //Header logado
                 </p>
               </button>
             </li>
+            <li className={`${!props.adm && "hidden"}`}>
+              <button onClick={() => props.setPage("equipes")}>
+                <p
+                  className={`${props.curPage == "equipes" && "underline underline-offset-4 font-semibold"} hover:opacity-50`}
+                >
+                  Equipes
+                </p>
+              </button>
+            </li>
             <li>
               <button onClick={() => props.setPage("empresas")}>
                 <p
