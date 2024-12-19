@@ -78,6 +78,11 @@ export function HeaderOut(props: HeaderOutProps) { //header não logado
                 <p className="py-3 lg:py-0 text-center lg:text-left">Sobre</p>
               </Link>
             </li>
+            <li className="w-full lg:w-auto"> 
+              <Link href="/edital">
+                <p className="py-3 lg:py-0 text-center lg:text-left">Edital</p>
+              </Link>
+            </li>
             {logado.isLogado&&<li>
                 <Link
                 href="/api/auth/logout"
