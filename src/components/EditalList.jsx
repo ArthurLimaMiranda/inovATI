@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link"; // Importa o componente Link do Next.js
 
 export default function EditalList({ editais }) {
   return (
@@ -23,9 +24,12 @@ export default function EditalList({ editais }) {
             <td className="py-2 px-4">{edital.startDate}</td>
             <td className="py-2 px-4">{edital.endDate}</td>
             <td className="py-2 px-4">
-              <button className="text-blue-500 hover:underline">
+              <Link
+                href={`/edital/${edital.id}`} // Define a rota dinâmica para cada edital
+                className="text-blue-500 hover:underline"
+              >
                 🔗 Ver mais
-              </button>
+              </Link>
             </td>
           </tr>
         ))}
