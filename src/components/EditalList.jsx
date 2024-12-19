@@ -25,7 +25,7 @@ export default function EditalList({ editais }) {
             <td className="py-2 px-4">{edital.endDate}</td>
             <td className="py-2 px-4">
               <Link
-                href={`/edital/${edital.id}`} // Define a rota dinâmica para cada edital
+                href={`/editalDetalhes`} // Define a rota dinâmica para cada edital
                 className="text-blue-500 hover:underline"
               >
                 🔗 Ver mais

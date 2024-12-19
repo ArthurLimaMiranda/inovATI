@@ -37,11 +37,6 @@ export  function Edital() {
         {/* Barra de Pesquisa */}
         <SearchBar onSearch={(term) => setSearchTerm(term)} />
 
-        {/* Botão Novo Edital */}
-        <button className="bg-[#088395]text-white px-4 py-2 rounded hover:bg-gray-700 transition duration-200 mb-4">
-          Novo Edital
-        </button>
-
         {/* Lista de Editais */}
         <EditalList editais={filteredEditais} />
       </main>
