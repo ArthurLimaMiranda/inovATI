@@ -1,6 +1,6 @@
 //Dashboard para a vizualização de editais favoritados e criação de pré-projeto
 "use client";
-import { Prolema} from "../../typings";
+import { Prolema, Solucao} from "../../typings";
 import React, { useEffect, useState } from "react";
 import { FaRegStar } from "react-icons/fa";
 import Image from "next/image";
@@ -10,55 +10,92 @@ import { Switch } from "@headlessui/react";
 import { useAppContext } from "@/app/contexts/InfoContext";
 
 export function DashSubmissoes() {
-  const { problemas, setProlema, usuarios } = useAppContext();
+  const { problemas, solucoes, setProlema, setSolucao, usuarios, equipes } = useAppContext();
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [filterInova, setFilterInova] = useState<boolean | null>(null);
-  const [filterStatus, setFilterStatus] = useState<boolean | null>(null);
-  const [filterAvaliacao, setFilterAvaliacao] = useState<boolean | null>(null);
-  const [filteredProblemas, setFilteredProblemas] = useState<Prolema[]>(problemas);
   
+  // Estados para Problemas
+  const [filterInovaProb, setFilterInovaProb] = useState<boolean | null>(null);
+  const [filterStatusProb, setFilterStatusProb] = useState<boolean | null>(null);
+  const [filterAvaliacaoProb, setFilterAvaliacaoProb] = useState<boolean | null>(null);
+  const [filteredProblemas, setFilteredProblemas] = useState<Prolema[]>(problemas);
+
+  // Estados para Soluções
+  const [filterInovaSol, setFilterInovaSol] = useState<boolean | null>(null);
+  const [filterStatusSol, setFilterStatusSol] = useState<boolean | null>(null);
+  const [filterAvaliacaoSol, setFilterAvaliacaoSol] = useState<boolean | null>(null);
+  const [filteredSolucoes, setFilteredSolucoes] = useState<Solucao[]>(solucoes);
+
   const [isSelected, setIsSelected] = useState(false);
   const [selectedProblema, setSelectedProblema] = useState<Prolema | null>(null);
+  const [selectedSolucao, setSelectedSolucao] = useState<Solucao | null>(null);
+
   const [isProblemasVisible, setIsProblemasVisible] = useState(false);
+  const [isSolucoesVisible, setIsSolucoesVisible] = useState(false);
+
+  const [isProb, setIsProb] = useState(true);
 
   useEffect(() => {
     let filtered = problemas;
 
-    // Filtra pelo título
     if (searchTerm.trim()) {
       filtered = filtered.filter((problema) =>
         problema.titulo.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
-    // Filtra por "Inova"
-    if (filterInova !== null) {
-      filtered = filtered.filter((problema) => problema.inova === filterInova);
+    if (filterInovaProb !== null) {
+      filtered = filtered.filter((problema) => problema.inova === filterInovaProb);
     }
 
-    // Filtra por "Status"
-    if (filterStatus !== null) {
-      filtered = filtered.filter((problema) => problema.status === filterStatus);
+    if (filterStatusProb !== null) {
+      filtered = filtered.filter((problema) => problema.status === filterStatusProb);
     }
-    
-    if (filterAvaliacao !== null) {
-      filtered = filtered.filter((problema) => problema.aprovado === filterAvaliacao);
+
+    if (filterAvaliacaoProb !== null) {
+      filtered = filtered.filter((problema) => problema.aprovado === filterAvaliacaoProb);
     }
 
     setFilteredProblemas(filtered);
-  }, [searchTerm, filterInova, filterStatus, filterAvaliacao, problemas]);
+  }, [searchTerm, filterInovaProb, filterStatusProb, filterAvaliacaoProb, problemas]);
 
-  function showEditais(card: Prolema) { //Expõe editais
-    const selectedProblema = problemas.find((problema) => problema.id === card.id);
+  // Filtragem para soluções
+  useEffect(() => {
+    let filtered = solucoes;
 
-    if (selectedProblema) {
-      setSelectedProblema(selectedProblema);
-      setIsProblemasVisible(true);
+    if (searchTerm.trim()) {
+      filtered = filtered.filter((solucao) =>
+        solucao.titulo.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    if (filterInovaSol !== null) {
+      filtered = filtered.filter((solucao) => solucao.inova === filterInovaSol);
+    }
+
+    if (filterStatusSol !== null) {
+      filtered = filtered.filter((solucao) => solucao.status === filterStatusSol);
+    }
+
+    if (filterAvaliacaoSol !== null) {
+      filtered = filtered.filter((solucao) => solucao.aprovado === filterAvaliacaoSol);
+    }
+
+    setFilteredSolucoes(filtered);
+  }, [searchTerm, filterInovaSol, filterStatusSol, filterAvaliacaoSol, solucoes]);
+
+
+  function showEditais(card: Prolema | Solucao) {
+    if (isProb) {
+      const selected = problemas.find((problema) => problema.id === card.id);
+      setSelectedProblema(selected || null);
+      setIsProblemasVisible(!!selected);
     } else {
-      setSelectedProblema(null);
-      setIsProblemasVisible(false);
+      const selected = solucoes.find((solucao) => solucao.id === card.id);
+      setSelectedSolucao(selected || null);
+      setIsSolucoesVisible(!!selected);
     }
   }
+
 
   const [isCardsVisible, setIsCardsVisible] = useState(false);
 
@@ -70,29 +107,57 @@ export function DashSubmissoes() {
     localStorage.setItem("problemas", JSON.stringify(novosProblemas));
   };
 
-  const toggleStatus = (problema: Prolema) => {
-    const problemaAtualizado = { ...problema, status: !problema.status };
-    atualizarProblemas(problemaAtualizado);
-    setSelectedProblema(problemaAtualizado);
+  const atualizarSolucoes = (solucaoAtualizado: Solucao) => {
+    const novosSolucoes = solucoes.map((solucao) =>
+      solucao.id === solucaoAtualizado.id ? solucaoAtualizado : solucao
+    );
+    setSolucao(novosSolucoes);
+    localStorage.setItem("solucoes", JSON.stringify(novosSolucoes));
+  };
+
+  const toggleStatus = (card: Prolema|Solucao) => {
+    if ("proponenteID" in card){
+      const problemaAtualizado = { ...card, status: !card.status };
+      atualizarProblemas(problemaAtualizado);
+      setSelectedProblema(problemaAtualizado);
+    }
+    else{
+      const solucaoAtualizado = { ...card, status: !card.status };
+      atualizarSolucoes(solucaoAtualizado);
+      setSelectedSolucao(solucaoAtualizado);
+    }
   };
 
   // Alterna a aprovação do problema
-  const toggleAprovacao = (problema: Prolema) => {
-    const problemaAtualizado = { ...problema, aprovado: !problema.aprovado };
-    atualizarProblemas(problemaAtualizado);
-    setSelectedProblema(problemaAtualizado);
+  const toggleAprovacao = (card: Prolema|Solucao) => {
+
+    if ("proponenteID" in card){
+      const problemaAtualizado = { ...card, aprovado: !card.aprovado};
+      atualizarProblemas(problemaAtualizado);
+      setSelectedProblema(problemaAtualizado);
+    }
+    else{
+      const solucaoAtualizado = { ...card, aprovado: !card.aprovado};
+      atualizarSolucoes(solucaoAtualizado);
+      setSelectedSolucao(solucaoAtualizado);
+    }
   };
 
+  function handleChangeSolProb(){
+    setIsProb(!isProb)
+    setFilterInovaSol(null);
+    setFilterStatusSol(null);
+    setFilterAvaliacaoSol(null);
+    setFilteredSolucoes(solucoes);
 
-  const removerProblema = (id: number) => {
-    const updatedProblemas = problemas.filter((p) => p.id !== id);
-    setProlema(updatedProblemas);
-    localStorage.setItem("problemas", JSON.stringify(updatedProblemas));
-  };
-  
-  const toggleCardsVisibility = () => {
-    setIsProblemasVisible(!isProblemasVisible);
-  };
+    setIsSelected(false);
+    setSelectedProblema(null);
+    setSelectedSolucao(null);
+
+    setIsProblemasVisible(false);
+    setIsSolucoesVisible(false);
+
+  }
 
   return (
     <div className="relative ">
@@ -118,13 +183,11 @@ export function DashSubmissoes() {
         <div className="absolute top-28 w-full justify-between flex flex-col lg:flex-row">
           <div className="bg-[#C5E2E6] w-full lg:w-[28vw] mb-12 lg:ml-16 lg:h-[80vh] rounded-xl shadow-lg lg:shadow-2xl flex flex-col items-center">
             <div className="items-center flex justify-center my-5">
-              <FaRegStar
-                className="mr-2 items-center flex text-[#088395]"
-                size={20}
-              />
-              <h2 className="font-bold text-xl text-[#088395] font-sans">
-                Lista de Problemas
-              </h2>
+              
+              <button onClick={handleChangeSolProb} className="flex items-center flex-row gap-x-1 font-bold text-xl text-white py-2 px-3 font-sans hover:opacity-60 rounded-2xl bg-[#088395]">
+                <FaRegStar className="mr-2 items-center flex text-white" size={20}/>
+                Lista de {isProb?('Problemas'):('Soluções')}
+              </button>
               <div className="border-t-2 border-gray-50"></div>
             </div>
 
@@ -142,81 +205,173 @@ export function DashSubmissoes() {
                 </div>
 
                 <div className="flex flex-row justify-between gap-x-4">
-                  <div className="flex flex-col items-center gap-2">
-                    <label className="font-semibold">Inova:</label>
-                    <select
-                      value={filterInova === null ? "" : filterInova ? "true" : "false"}
-                      onChange={(e) =>
-                        setFilterInova(
-                          e.target.value === "true"
-                            ? true
-                            : e.target.value === "false"
-                            ? false
-                            : null
-                        )
-                      }
-                      className="border border-gray-300 rounded px-4 py-2"
-                    >
-                      <option value="">Todos</option>
-                      <option value="true">Sim</option>
-                      <option value="false">Não</option>
-                    </select>
-                  </div>
+  {/* Filtro Inova */}
+  <div className="flex flex-col items-center gap-2">
+    <label className="font-semibold">Inova:</label>
+    <select
+      value={
+        isProb
+          ? filterInovaProb === null
+            ? ""
+            : filterInovaProb
+            ? "true"
+            : "false"
+          : filterInovaSol === null
+          ? ""
+          : filterInovaSol
+          ? "true"
+          : "false"
+      }
+      onChange={(e) => {
+        if (isProb) {
+          setFilterInovaProb(
+            e.target.value === "true"
+              ? true
+              : e.target.value === "false"
+              ? false
+              : null
+          );
+        } else {
+          setFilterInovaSol(
+            e.target.value === "true"
+              ? true
+              : e.target.value === "false"
+              ? false
+              : null
+          );
+        }
+      }}
+      className="border border-gray-300 rounded px-4 py-2"
+    >
+      <option value="">Todos</option>
+      <option value="true">Sim</option>
+      <option value="false">Não</option>
+    </select>
+  </div>
 
-                  <div className="flex flex-col items-center gap-2">
-                    <label className="font-semibold">Status:</label>
-                    <select
-                      value={filterStatus === null ? "" : filterStatus ? "true" : "false"}
-                      onChange={(e) =>
-                        setFilterStatus(
-                          e.target.value === "true"
-                            ? true
-                            : e.target.value === "false"
-                            ? false
-                            : null
-                        )
-                      }
-                      className="border border-gray-300 rounded px-4 py-2"
-                    >
-                      <option value="">Todos</option>
-                      <option value="true">Ativo</option>
-                      <option value="false">Inativo</option>
-                    </select>
-                  </div>
+  {/* Filtro Status */}
+  <div className="flex flex-col items-center gap-2">
+    <label className="font-semibold">Status:</label>
+    <select
+      value={
+        isProb
+          ? filterStatusProb === null
+            ? ""
+            : filterStatusProb
+            ? "true"
+            : "false"
+          : filterStatusSol === null
+          ? ""
+          : filterStatusSol
+          ? "true"
+          : "false"
+      }
+      onChange={(e) => {
+        if (isProb) {
+          setFilterStatusProb(
+            e.target.value === "true"
+              ? true
+              : e.target.value === "false"
+              ? false
+              : null
+          );
+        } else {
+          setFilterStatusSol(
+            e.target.value === "true"
+              ? true
+              : e.target.value === "false"
+              ? false
+              : null
+          );
+        }
+      }}
+      className="border border-gray-300 rounded px-4 py-2"
+    >
+      <option value="">Todos</option>
+      <option value="true">Ativo</option>
+      <option value="false">Inativo</option>
+    </select>
+  </div>
 
-                  <div className="flex flex-col items-center gap-2">
-                    <label className="font-semibold">Concição:</label>
-                    <select
-                      value={filterAvaliacao === null ? "" : filterInova ? "true" : "false"}
-                      onChange={(e) =>
-                        setFilterAvaliacao(
-                          e.target.value === "true"
-                            ? true
-                            : e.target.value === "false"
-                            ? false
-                            : null
-                        )
-                      }
-                      className="border border-gray-300 rounded px-4 py-2"
-                    >
-                      <option value="">Todos</option>
-                      <option value="true">Aprovado</option>
-                      <option value="false">Não avaliado   </option>
-                    </select>
-                  </div>
-                </div>
+  {/* Filtro Condição */}
+  <div className="flex flex-col items-center gap-2">
+    <label className="font-semibold">Condição:</label>
+    <select
+      value={
+        isProb
+          ? filterAvaliacaoProb === null
+            ? ""
+            : filterAvaliacaoProb
+            ? "true"
+            : "false"
+          : filterAvaliacaoSol === null
+          ? ""
+          : filterAvaliacaoSol
+          ? "true"
+          : "false"
+      }
+      onChange={(e) => {
+        if (isProb) {
+          setFilterAvaliacaoProb(
+            e.target.value === "true"
+              ? true
+              : e.target.value === "false"
+              ? false
+              : null
+          );
+        } else {
+          setFilterAvaliacaoSol(
+            e.target.value === "true"
+              ? true
+              : e.target.value === "false"
+              ? false
+              : null
+          );
+        }
+      }}
+      className="border border-gray-300 rounded px-4 py-2"
+    >
+      <option value="">Todos</option>
+      <option value="true">Aprovado</option>
+      <option value="false">Não avaliado</option>
+    </select>
+  </div>
+</div>
+
 
                 <div
                   className={`flex flex-col w-full px-5 overflow-y-scroll h-[55vh] pt-5 ${!isCardsVisible && "hidden"} lg:block`}
                   style={{ scrollbarWidth: "thin" }}
                 >
-                  {filteredProblemas.map((card, index) => (
+                  {isProb&&filteredProblemas.map((card, index) => (
                     <div
                       key={index}
                       className={`bg-white rounded-xl p-3 mb-4 shadow-md w-[100%] hover:opacity-60 flex flex-col justify-between ${card.id === selectedProblema?.id && "cursor-pointer"} ${isSelected ? (card.id === selectedProblema?.id ? "border bgb" : "opacity-30") : ""}`}
                       onClick={() => {
                         showEditais(card);
-                        setIsSelected(true);
+                        setIsSelected(card.id==selectedProblema?.id?(false):(true));
+                        if(card.id==selectedProblema?.id){
+                          setIsProblemasVisible(false)
+                          setSelectedProblema(null)
+                        }
+                      }}
+                    >
+                      <div className="flex items-start justify-between mb-4">
+                        <h2 className="text-xl font-bold">{card.titulo}</h2>
+                      </div>
+                    </div>
+                  ))}
+                  {!isProb&&filteredSolucoes.map((card, index) => (
+                    <div
+                      key={index}
+                      className={`bg-white rounded-xl p-3 mb-4 shadow-md w-[100%] hover:opacity-60 flex flex-col justify-between ${card.id === selectedSolucao?.id && "cursor-pointer"} ${isSelected ? (card.id === selectedSolucao?.id ? "border bgb" : "opacity-30") : ""}`}
+                      onClick={() => {
+                        showEditais(card);
+                        setIsSelected(card.id==selectedSolucao?.id?(false):(true));
+                        if(card.id==selectedSolucao?.id){
+                          setIsSolucoesVisible(false)
+                          setSelectedSolucao(null)
+                        }
                       }}
                     >
                       <div className="flex items-start justify-between mb-4">
@@ -229,9 +384,9 @@ export function DashSubmissoes() {
             </div>
           </div>
 
-          {isProblemasVisible && selectedProblema && (
+          {isProb&&isProblemasVisible && selectedProblema && (
             <div
-              className="bg-[#F5F5F5] lg:w-[60vw] lg:mr-16 mb-12 h-[80vh] rounded-xl shadow-lg lg:shadow-2xl flex flex-col overflow-y-scroll"
+              className="bg-[#F5F5F5] border-2 lg:w-[60vw] lg:mr-16 mb-12 px-[5%] h-[80vh] rounded-xl shadow-lg lg:shadow-2xl flex flex-col overflow-y-scroll"
               style={{ maxHeight: "80vh", scrollbarWidth: "thin" }}
             >
               <div className="flex items-center justify-center mt-8 border-b py-5">
@@ -256,7 +411,7 @@ export function DashSubmissoes() {
                 <h2 className="font-bold text-2xl text-center">
                   {selectedProblema.titulo}
                 </h2>
-                <p className="text-gray-600 mt-4">{selectedProblema.descricao}</p>
+                <p className="text-gray-600 mt-4 mx-10 border rounded-xl p-5 max-h-40 overflow-y-scroll">{selectedProblema.descricao}</p>
               </div>
 
               <div className="mx-4 mt-6">
@@ -339,6 +494,118 @@ export function DashSubmissoes() {
                             prevProblemas.filter((problema) => problema.id !== selectedProblema.id)
                           );
                           setIsProblemasVisible(false);
+                        }
+                      }}
+                    >
+                      Apagar
+                    </button>
+                  </div>
+
+                </div>
+              </div>
+            </div>)
+          }
+
+          {!isProb&&isSolucoesVisible && selectedSolucao && (
+            <div
+              className="bg-[#F5F5F5] border-2 lg:w-[60vw] lg:mr-16 mb-12 px-[5%] h-[80vh] rounded-xl shadow-lg lg:shadow-2xl flex flex-col overflow-y-scroll"
+              style={{ maxHeight: "80vh", scrollbarWidth: "thin" }}
+            >
+              <div className="flex items-center justify-center mt-8 border-b py-5">
+                {selectedSolucao.inova === true ? (
+                  <Image
+                    src={inova}
+                    alt="Inova"
+                    width={300}
+                    height={200}
+                  />
+                ) : (
+                  <Image
+                    src={ati}
+                    alt="ATI"
+                    width={300}
+                    height={200}
+                  />
+                )}
+              </div>
+
+              <div className="flex flex-col items-center mt-6">
+                <h2 className="font-bold text-2xl text-center">
+                  {selectedSolucao.titulo}
+                </h2>
+                <p className="text-gray-600 mt-4 mx-10 border rounded-xl p-5 max-h-40 overflow-y-scroll">{selectedSolucao.descricao}</p>
+              </div>
+
+              <div className="mx-4 mt-6">
+                <div className="flex flex-col px-10 gap-y-10">
+
+                  <div className="flex items-center gap-x-2 text-center">
+                    <p className="font-semibold">Nome da Equipe:</p>
+                    <p>{ equipes.find((u) => u.id === selectedSolucao.equipeID)?.nome || "Não especificado"}</p>
+                  </div>
+
+                  <div className="flex flex-row justify-between gap-x-5">
+                    <div className="flex items-center gap-x-2 text-center">
+                      <p className="font-semibold">Link do Pich:</p>
+                      <p>{selectedSolucao.pitchLink}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-row justify-between">
+                    <div>
+                      <div className="flex items-center gap-x-2 text-center">
+                      <p className="font-semibold">Visibilidade:</p>
+                      <div className="flex items-center gap-2">
+                        <Switch
+                          checked={selectedSolucao.status}
+                          onChange={() => toggleStatus(selectedSolucao)}
+                          className={`${
+                            selectedSolucao.status ? "bg-blue-600" : "bg-gray-400"
+                          } relative inline-flex items-center h-6 rounded-full w-11`}
+                        >
+                          <span
+                            className={`${
+                              selectedSolucao.status ? "translate-x-6" : "translate-x-1"
+                            } inline-block w-4 h-4 transform bg-white rounded-full transition-transform`}
+                          />
+                        </Switch>
+                        <label className="text-sm font-medium">
+                          {selectedSolucao.status ? "Ativo" : "Inativo"}
+                        </label>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-x-2 text-center">
+                      <p className="font-semibold">Status:</p>
+                      <div className="flex items-center gap-2">
+                        <Switch
+                          checked={selectedSolucao.aprovado}
+                          onChange={() => toggleAprovacao(selectedSolucao)}
+                          className={`${
+                            selectedSolucao.aprovado ? "bg-green-600" : "bg-gray-400"
+                          } relative inline-flex items-center h-6 rounded-full w-11`}
+                        >
+                          <span
+                            className={`${
+                              selectedSolucao.aprovado ? "translate-x-6" : "translate-x-1"
+                            } inline-block w-4 h-4 transform bg-white rounded-full transition-transform`}
+                          />
+                        </Switch>
+                        <label className="text-sm font-medium">
+                          {selectedSolucao.aprovado ? "Aprovado" : "Não Aprovado"}
+                        </label>
+                      </div>
+                    </div>
+                    </div>
+
+                    <button
+                      className="bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-700"
+                      onClick={() => {
+                        if (confirm("Tem certeza que deseja apagar este problema?")) {
+                          setSolucao((prevSolucoes) =>
+                            prevSolucoes.filter((solucao) => solucao.id !== selectedSolucao.id)
+                          );
+                          setIsSolucoesVisible(false);
                         }
                       }}
                     >

@@ -12,6 +12,9 @@ import rec1 from "../../public/images/rec1.jpg";
 import rec2 from "../../public/images/rec2.jpg";
 import rec3 from "../../public/images/rec3.jpg";
 import rec4 from "../../public/images/rec4.jpg";
+
+import rec5 from "../../public/images/garrafaEncaxangada.jpg";
+
 import facepe from "../../public/images/facepe_img.jpg";
 import finep from "../../public/images/finep_img.jpg";
 
@@ -20,7 +23,7 @@ import { Footer } from "./Footer";
 
 export function DashEditais() {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const images = [rec4, rec3, portoGalinhas, rec2, recAntigo1, rec1];
+  const images = [rec5, rec4, rec3, portoGalinhas, rec2, recAntigo1, rec1];
 
   useEffect(() => {
     //Alterna as imagens mostradas no começo da página a cada 3 segundos

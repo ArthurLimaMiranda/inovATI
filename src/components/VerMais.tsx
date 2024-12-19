@@ -1,77 +1,40 @@
 //Exibe as informações do Edital, para vizualização ou edição, junto com seu botão de download
 import React, { useEffect, useState } from "react";
-import Marca_FACEPE from "../../public/images/Marca-FACEPE.png";
-import FINEP from "../../public/images/FINEP.png";
+import inova from "../../public/images/inova.png";
+import ati from "../../public/images/ati.png";
 import Image from "next/image";
 import { FaFileDownload } from "react-icons/fa";
 import { AiFillEdit } from "react-icons/ai";
-import { FaSave, FaTrash } from "react-icons/fa";
 
 interface Card {
   id: number;
-  nome: string;
+  titulo: string;
+  descricao: string;
+  proponenteID: number | null; // Altere para permitir null
   categoria: string;
-  publicoAlvo: string;
+  publicAlvo: string;
   area: string;
-  dataPublicacao: string;
-  dataInicial: string;
-  dataFinal: string;
-  resultado: string;
-  idOrgaoFomento: number;
-  criadoPorBot: boolean;
-  link: string;
+  inova: boolean;
+  status: boolean;
+  aprovado:boolean
 }
 
 interface CardsProps {
   id: number;
-  nome: string;
-  categoria: string;
-  publicoAlvo: string;
-  area: string;
-  dataPublicacao: string;
-  dataInicial: string;
-  dataFinal: string;
-  resultado: string;
-  idOrgaoFomento: number;
-  idUsuario: number;
-  criadoPorBot: boolean;
-  link: string;
-  editar: boolean;
-  filteredCards: Card[];
-  setFilteredCards: Function;
+    titulo: string;
+    categoria: string;
+    area: string;
+    descricao: string;
+    publicAlvo: string;
+    inova: boolean;
+    proponenteID: number | null;
+    logged: boolean;
+    filteredCards: Card[];
+    setFilteredCards: Function;
 }
 
 export function VerMais(props: CardsProps) { {/*Modal Ver Mais com informações dos editais */}
   const [showModal, setShowModal] = useState(false);
-
-  const [nomeEdital, setNomeEdital] = useState(props.nome);
-  const [categoria, setCategoria] = useState(props.categoria);
-  const [publicoAlvo, setPublicoAlvo] = useState(props.publicoAlvo);
-  const [area, setArea] = useState(props.area);
-
-  const [dataPublicacao, setDataPublicacao] = useState(
-    props.dataPublicacao.split(" ")[0]
-  );
-  const [horaPublicacao, setHoraPublicacao] = useState(
-    props.dataPublicacao.split(" ")[1]
-  );
-
-  const [dataInicial, setDataInicial] = useState(
-    props.dataInicial.split(" ")[0]
-  );
-  const [horaInicial, setHoraInicial] = useState(
-    props.dataInicial.split(" ")[1]
-  );
-
-  const [dataFinal, setDataFinal] = useState(props.dataFinal.split(" ")[0]);
-  const [horaFinal, setHoraFinal] = useState(props.dataFinal.split(" ")[1]);
-
-  const [dataResultado, setDataResultado] = useState(
-    props.resultado.split(" ")[0]
-  );
-  const [horaResultado, setHoraResultado] = useState(
-    props.resultado.split(" ")[1]
-  );
 
   useEffect(() => {
     //Bloqueia o scroll pela página quando o modal está aberto
@@ -85,84 +48,46 @@ export function VerMais(props: CardsProps) { {/*Modal Ver Mais com informações
     };
   }, [showModal]);
 
-  ////Converte as infos de data e horários dos inputs para se adequar ao backend e vice versa
-  function formatDate(date: any) {
-    const [day, month, year] = date.split("/");
-    return `${year}-${month}-${day}`;
-  }
-
-  function reFormatDate(date: any) {
-    const [day, month, year] = date.split("-");
-    return `${year}/${month}/${day}`;
-  }
-  ////
 
   function resetModal() {
     //Reseta as informações dos campos importantes para preparar a vizualização do novo edital
     setShowModal(true);
-    setNomeEdital(props.nome);
-    setCategoria(props.categoria);
-    setPublicoAlvo(props.publicoAlvo);
-    setArea(props.area);
-    setDataPublicacao(formatDate(props.dataPublicacao.split(" ")[0]));
-    setHoraPublicacao(props.dataPublicacao.split(" ")[1]);
-
-    setDataInicial(formatDate(props.dataInicial.split(" ")[0]));
-    setHoraInicial(props.dataInicial.split(" ")[1]);
-
-    setDataFinal(formatDate(props.dataFinal.split(" ")[0]));
-    setHoraFinal(props.dataFinal.split(" ")[1]);
-
-    setDataResultado(formatDate(props.resultado.split(" ")[0]));
-    setHoraResultado(props.resultado.split(" ")[1]);
   }
 
 
   return (
     <>
-      {!props.editar && (
-        <button
-          onClick={() => resetModal()}
-          className="flex justify-center gap-x-3 leading-none border-none outline-none rounded-xl bg-[#088395] px-8 py-2 text-lg text-white items-center cursor-pointer hover:shadow-button-Home-hover-focus focus:shadow-button-Home-hover-focus"
-        >
-          Ver mais
-        </button>
-      )}
-      {props.editar && (
-        <button
-          onClick={() => resetModal()}
-          className="flex justify-center leading-none border-none outline-none rounded-xl bg-[#088395] py-2 px-2 text-lg text-white items-center cursor-pointer hover:shadow-button-Home-hover-focus focus:shadow-button-Home-hover-focus"
-        >
-          <AiFillEdit />
-        </button>
-      )}
+      
+      <button
+        onClick={() => resetModal()}
+        className="flex justify-center gap-x-3 leading-none border-none outline-none rounded-xl bg-[#088395] px-8 py-2 text-lg text-white items-center cursor-pointer hover:shadow-button-Home-hover-focus focus:shadow-button-Home-hover-focus"
+      >
+        Ver mais
+      </button>
+      
 
       {showModal ? ( //Verifica condições de "editar" e "só visualização"
         <>
           <div className="flex items-center justify-center min-h-screen overflow-x-hidden overflow-y-auto fixed inset-0 z-50">
             <div
-              className={`bg-gray-1000 shadow-lg shadow-gray-500 rounded-2xl ${
-                props.editar
-                  ? "w-full md:w-[80vw] h-[85vh]"
-                  : "w-full md:w-[65vw] h-[75vh]"
-              }`}
+              className={`bg-gray-1000 shadow-lg shadow-gray-500 rounded-2xl w-full md:w-[60vw] min-h-[65vh]  max-h-[75vh]`}
             >
               <div className="flex bg-white flex-col px-4 md:px-10 gap-6 md:gap-8 rounded-xl w-full h-full overflow-y-scroll">
                 <div
-                  className={`flex flex-col w-full justify-center px-4 md:px-6 pt-5 rounded-lg ${props.editar ? "gap-y-9" : "gap-y-5"}`}
+                  className={`flex flex-col w-full justify-center px-4 md:px-6 pt-5 rounded-lg gap-y-5`}
                 >
                   <div className="flex justify-center items-center">
-                    {props.idOrgaoFomento === 1 ? (
+                    {props.inova === true ? (
                       <Image
-                        src={Marca_FACEPE}
-                        alt="Descrição da imagem do FACEPE"
+                        src={inova}
+                        alt="Inova"
                         width={300}
                         height={200}
                       />
                     ) : (
                       <Image
-                        src={FINEP}
-                        alt="Descrição da imagem da FINEP"
+                        src={ati}
+                        alt="ATI"
                         width={300}
                         height={200}
                       />
@@ -170,204 +95,38 @@ export function VerMais(props: CardsProps) { {/*Modal Ver Mais com informações
                   </div>
 
                   <div className="flex text-center flex-col md:flex-row justify-between w-full">
-                    {!props.editar && (
-                      <p className="font-bold text-lg">{props.nome}</p>
-                    )}
-                    {props.editar && (
-                      <input
-                        type="text"
-                        value={nomeEdital}
-                        onChange={(e) => setNomeEdital(e.target.value)}
-                        className="border-b border-b-[#1C1C1C] w-full text-lg text-[#1C1C1C] bg-transparent border-1 appearance-none focus:outline-none focus:ring-0 focus:border-[#088395]"
-                        placeholder="Insira o nome do edital"
-                        required
-                      />
-                    )}
+                    <p className="font-bold text-2xl">{props.titulo}</p>
                   </div>
 
-                  <div className="gap-x-2 gap-y-4 md:gap-x-10 md:gap-y-6 flex flex-col">
-                    <div className="flex items-center gap-x-2 md:gap-x-5">
-                      <p className="font-semibold">Publicação:</p>
-                      {!props.editar && (
-                        <p className="ml-1">{props.dataPublicacao}</p>
-                      )}
-                      {props.editar && (
-                        <div className="flex flex-col md:flex-row">
-                          <input
-                            type="date"
-                            value={dataPublicacao}
-                            onChange={(e) => setDataPublicacao(e.target.value)}
-                            className="w-full md:w-[80%] block text-base text-[#1C1C1C] bg-transparent appearance-none outline-none ring-0 rounded-full lg:rounded-tr-none lg:rounded-br-none rounded-tl-full rounded-bl-full focus:border-[#088395]"
-                            required
-                          />
-                          <input
-                            type="time"
-                            value={horaPublicacao}
-                            onChange={(e) => setHoraPublicacao(e.target.value)}
-                            className="w-full md:w-[50%] block text-base text-[#1C1C1C] bg-transparent appearance-none outline-none ring-0 rounded-full lg:rounded-tl-none lg:rounded-bl-none rounded-tr-full rounded-br-full focus:border-[#088395]"
-                            required
-                          />
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex">
-                      <p className="font-semibold">Órgão de Fomento:</p>
-                      <p className="ml-1">
-                        {props.idOrgaoFomento === 1 ? "FACEPE" : "FINEP"}
-                      </p>
-                    </div>
-                    <div className="flex gap-x-2 items-center">
-                      <p className="font-semibold">Área: </p>
-                      {!props.editar && (
+                  <div className="flex flex-row justify-between mt-5 border w-[100%] items-center p-5 rounded-2xl">
+                    <div className="gap-x-2 gap-y-2 md:gap-x-10 w-[50%] flex flex-col">
+                      <div className="flex">
+                        <p className="font-semibold">Disponibilizado por:</p>
                         <p className="ml-1">
-                          {props.area === "" ? (
-                            <span className="italic text-sm underline">
-                              Adicionar área
-                            </span>
-                          ) : (
-                            props.area
-                          )}
+                          {props.inova === true ? "INOVA" : "ATI"}
                         </p>
-                      )}
-                      {props.editar && (
-                        <input
-                          type="text"
-                          value={area}
-                          onChange={(e) => setArea(e.target.value)}
-                          className="border-b border-b-[#1C1C1C] w-full md:w-[30%] text-left block text-lg text-[#1C1C1C] bg-transparent border-1 appearance-none focus:outline-none focus:ring-0 focus:border-[#088395]"
-                          placeholder="Insira a área de atuação do edital"
-                          required
-                        />
-                      )}
-                    </div>
-                    <div className="flex gap-x-2 items-center">
-                      <p className="font-semibold">Categoria:</p>
-                      {!props.editar && (
-                        <p className="ml-1">
-                          {props.categoria === "" ? (
-                            <span className="italic text-sm underline">
-                              Adicionar categoria
-                            </span>
-                          ) : (
-                            props.categoria
-                          )}
-                        </p>
-                      )}
-                      {props.editar && (
-                        <input
-                          type="text"
-                          value={categoria}
-                          onChange={(e) => setCategoria(e.target.value)}
-                          className="border-b border-b-[#1C1C1C] w-full md:w-[30%] text-left block text-lg text-[#1C1C1C] bg-transparent border-1 appearance-none focus:outline-none focus:ring-0 focus:border-[#088395]"
-                          placeholder="Insira a categoria do edital"
-                          required
-                        />
-                      )}
-                    </div>
-                    <div className="flex gap-x-2 items-center">
-                      <p className="font-semibold">Público Alvo:</p>
-                      {!props.editar && (
-                        <p className="ml-1">
-                          {props.publicoAlvo === "" ? (
-                            <span className="italic text-sm underline">
-                              Adicionar público alvo
-                            </span>
-                          ) : (
-                            props.publicoAlvo
-                          )}
-                        </p>
-                      )}
-                      {props.editar && (
-                        <input
-                          type="text"
-                          value={publicoAlvo}
-                          onChange={(e) => setPublicoAlvo(e.target.value)}
-                          className="border-b border-b-[#1C1C1C] w-full md:w-[30%] text-left block text-lg text-[#1C1C1C] bg-transparent border-1 appearance-none focus:outline-none focus:ring-0 focus:border-[#088395]"
-                          placeholder="Insira o público alvo do edital"
-                          required
-                        />
-                      )}
-                    </div>
-
-                    <div className="flex flex-col md:flex-row w-full justify-start gap-y-4 md:gap-x-[2vw]">
-                      <div className="border rounded-lg flex flex-col px-4 md:px-5 py-2 items-center justify-center gap-y-3">
-                        <p className="font-semibold">Data Inicial:</p>
-                        {!props.editar &&
-                          (props.dataInicial === ""
-                            ? "dd/mm/aaaa 00:00"
-                            : props.dataInicial)}
-                        {props.editar && (
-                          <div className="flex flex-col md:flex-row">
-                            <input
-                              type="date"
-                              value={dataInicial}
-                              onChange={(e) => setDataInicial(e.target.value)}
-                              className="w-full md:w-[55%] block text-base text-[#1C1C1C] bg-transparent appearance-none outline-none ring-0 rounded-full lg:rounded-tr-none lg:rounded-br-none rounded-tl-full rounded-bl-full focus:border-[#088395]"
-                              required
-                            />
-                            <input
-                              type="time"
-                              value={horaInicial}
-                              onChange={(e) => setHoraInicial(e.target.value)}
-                              className="w-full md:w-[45%] block text-base text-[#1C1C1C] bg-transparent appearance-none outline-none ring-0 rounded-full lg:rounded-tl-none lg:rounded-bl-none rounded-tr-full rounded-br-full focus:border-[#088395]"
-                              required
-                            />
-                          </div>
-                        )}
                       </div>
 
-                      <div className="border rounded-lg flex flex-col px-4 md:px-5 py-2 items-center justify-center gap-y-3">
-                        <p className="font-semibold">Data Final:</p>
-                        {!props.editar &&
-                          (props.dataFinal === ""
-                            ? "dd/mm/aaaa 00:00"
-                            : props.dataFinal)}
-                        {props.editar && (
-                          <div className="flex flex-col md:flex-row">
-                            <input
-                              type="date"
-                              value={dataFinal}
-                              onChange={(e) => setDataFinal(e.target.value)}
-                              className="w-full md:w-[50%] block text-base text-[#1C1C1C] bg-transparent appearance-none outline-none ring-0 rounded-full lg:rounded-tr-none lg:rounded-br-none rounded-tl-full rounded-bl-full focus:border-[#088395]"
-                              required
-                            />
-                            <input
-                              type="time"
-                              value={horaFinal}
-                              onChange={(e) => setHoraFinal(e.target.value)}
-                              className="w-full md:w-[45%] block text-base text-[#1C1C1C] bg-transparent appearance-none outline-none ring-0 rounded-full lg:rounded-tl-none lg:rounded-bl-none rounded-tr-full rounded-br-full focus:border-[#088395]"
-                              required
-                            />
-                          </div>
-                        )}
+                      <div className="flex gap-x-2 items-center">
+                        <p className="font-semibold">Área: </p> 
+                        <p className="ml-1">{props.area}</p>
                       </div>
 
-                      <div className="border rounded-lg flex flex-col px-4 md:px-5 py-2 items-center justify-center gap-y-3">
-                        <p className="font-semibold">Resultado:</p>
-                        {!props.editar &&
-                          (props.resultado === ""
-                            ? "dd/mm/aaaa 00:00"
-                            : props.resultado)}
-                        {props.editar && (
-                          <div className="flex flex-col md:flex-row">
-                            <input
-                              type="date"
-                              value={dataResultado}
-                              onChange={(e) => setDataResultado(e.target.value)}
-                              className="w-full md:w-[60%] block text-base text-[#1C1C1C] bg-transparent appearance-none outline-none ring-0 rounded-full lg:rounded-tr-none lg:rounded-br-none rounded-tl-full rounded-bl-full focus:border-[#088395]"
-                              required
-                            />
-                            <input
-                              type="time"
-                              value={horaResultado}
-                              onChange={(e) => setHoraResultado(e.target.value)}
-                              className="w-full md:w-[40%] block text-base text-[#1C1C1C] bg-transparent appearance-none outline-none ring-0 rounded-full lg:rounded-tl-none lg:rounded-bl-none rounded-tr-full rounded-br-full focus:border-[#088395]"
-                              required
-                            />
-                          </div>
-                        )}
+                      <div className="flex gap-x-2 items-center">
+                        <p className="font-semibold">Categoria:</p>
+                        <p className="ml-1">props.categoria</p>
+                      </div>
+                      <div className="flex gap-x-2 items-center">
+                        <p className="font-semibold">Público Alvo:</p>
+                        <p className="ml-1">{props.publicAlvo}</p>
                       </div>
                     </div>
+
+                    <div className="flex flex-col justify-start w-[50%] ">
+                      <p className="font-semibold">Descrição</p>
+                      <p className="text-gray-600 mt-4 border rounded-xl p-5 max-h-40 overflow-y-scroll">{props.descricao}</p>
+                    </div>
+
                   </div>
 
                   <div className="w-full pb-10 flex flex-col md:flex-row items-center justify-between font-semibold gap-y-4 md:gap-y-0">
@@ -379,15 +138,6 @@ export function VerMais(props: CardsProps) { {/*Modal Ver Mais com informações
                     >
                       Voltar
                     </button>
-
-                    {!props.editar && (
-                      <a
-                        href={props.link}
-                        className="flex items-center px-3 py-2 rounded-md text-white text-semibold cursor-pointer bg-[#088395] hover:opacity-60"
-                      >
-                        <FaFileDownload className="mr-2" /> Baixar Edital
-                      </a>
-                    )}
                   </div>
                 </div>
               </div>
